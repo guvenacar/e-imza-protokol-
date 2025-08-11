@@ -1,9 +1,16 @@
 # Tek kullanımlık Geçici Anahtar ile E-İmza Güvenlik Modeli
+
 **Hazırlayan:** Güven Acar
 **Tarih:** 11.08.2025 
+---
+Bu belge üç tür E-imza oluşturma protokolü önerisi içermektedir.
+**1- Tüm sürecin E-devlet tarafından yönetildiği merkeziyetçi model**
+**2- Docker Tabanlı Geçici E-İmza Protokolü**
+**3- Hibrit Model**
+---
 
 
-# Tüm sürecin E-devlet tarafından yönetildiği merkeziyetçi model.
+## Tüm sürecin E-devlet tarafından yönetildiği merkeziyetçi model.
 
 **1. Özet**
 Bu öneri, e-imza süreçlerinde **kalıcı özel anahtar (private key)** saklama riskini ortadan kaldırmak ve imza güvenliğini artırmak amacıyla geliştirilmiştir.  
