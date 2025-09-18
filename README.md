@@ -1,401 +1,244 @@
-# Ephemeral E-Signature Security System
+# E-İmza Sistemi Modelleri
 
-**Author:** Güven Acar  
-**Date:** September 2025
+Bu proje, Türkiye'de elektronik imza sistemleri için geliştirilmiş farklı mimarileri ve süreçleri içermektedir. Projede yer alan modeller, güvenli elektronik işlemlerin gerçekleştirilmesi için çeşitli yaklaşımlar sunmaktadır.
 
----
+## 📋 İçindekiler
 
-## Overview
+- [Genel Bakış](#genel-bakış)
+- [Model 1: Tüm Resmi İşlemlerde E-İmza Dönemi](#model-1-tüm-resmi-i̇şlemlerde-e-i̇mza-dönemi)
+  - [Model 1A: İlk Kayıt - Kişiye Özel Genel Anahtar Temini](#model-1a-i̇lk-kayıt---kişiye-özel-genel-anahtar-temini-upub)
+  - [Model 1B: Çevrim İçi Resmi Evrak İmzalama Süreci](#model-1b-çevrim-i̇çi-resmi-evrak-i̇mzalama-süreci)
+- [Model 2: İzole Çalışma Alanı Protokolü](#model-2-i̇zole-çalışma-alanı-protokolü)
+- [Model 3: Hibrit (Geçiş) Modeli](#model-3-hibrit-geçiş-modeli)
+- [Model 4: Çevrim İçi E-İmza Kayıt Süreci](#model-4-çevrim-i̇çi-e-i̇mza-kayıt-süreci)
+- [Teknik Gereksinimler](#teknik-gereksinimler)
 
-This project introduces a revolutionary approach to e-signature security by eliminating the need for permanent private key storage. The system is built on **ephemeral (single-use) keys** and **temporary certificates**. When a key is compromised, it affects only one transaction—past or future transactions remain completely secure.
+## 🎯 Genel Bakış
 
----
+Bu e-imza sistemi modelleri, Türkiye'nin elektronik imza altyapısında kullanılan çeşitli senaryoları kapsamaktadır. Her model, farklı kullanıcı durumları ve güvenlik gereksinimlerini karşılamak üzere tasarlanmıştır.
 
-## Philosophical Breaking Point
+### Temel Bileşenler
 
-This system initiates a new paradigm in digital identity and security:
-
-### Societal Transformation
-- **End of unsigned transactions:** All official, legal, and financial transactions will now be cryptographically signed
-- **Universal e-signature ownership:** Just as everyone has a national ID number, everyone will have an e-signature
-- **Background security:** Even elderly or non-technical users will unknowingly conduct transactions with their own e-signatures
-- **Bridging the digital divide:** Everyone from young to old will be included in this ecosystem
-
-### Economic Paradigm Shift
-- **Current system:** Every citizen must purchase a 200-500 USD e-signature device
-- **New system:** Universal access through government infrastructure
-- **Cost advantage:** Zero hardware investment for users
-- **Scale economy:** Centralized infrastructure for 80+ million citizens
-
-### Security Revolution
-- **Traditional risk:** One key compromise = all past transactions become suspicious
-- **Ephemeral approach:** Compromise affects only that single transaction
-- **Forward secrecy:** Backward security similar to TLS protocols
-- **End of fraud:** Unauthorized transactions, identity theft, and transaction repudiation become nearly impossible
+- **USER**: Son kullanıcı/Vatandaş
+- **Institution/E-Government**: Kurumsal sistemler (e-Devlet, Banka, Vergi Dairesi vb.)
+- **Network Transaction Authority (NTA)**: Ağ işlem otoritesi
+- **Certification Authority (CA)**: Sertifika otoritesi
+- **Isolated Workspace**: İzole çalışma ortamı
 
 ---
 
-## System Models
+## 🏛️ Model 1: Tüm Resmi İşlemlerde E-İmza Dönemi
+### (Tüm Vatandaşların E-İmza Sahibi Olması)
 
-### Model 1: E-Government Centralized Model
-
-**Target Users:** Elderly individuals, fixed-income citizens, anyone who doesn't want technical complexity
-
-**Core Concept:**
-All transaction coordination, key generation, and certificate distribution are managed by government infrastructure. Users don't need to generate or store keys—they simply log in with existing e-Government credentials.
-
-**Societal Impact:**
-- **Inclusivity:** No one is left out, technical barriers are removed
-- **Invisible security:** Users unknowingly sign every transaction
-- **Rapid adoption:** Instant use with existing e-Government credentials
-
-**Transaction Flow:**
-1. User logs into e-Government and initiates transaction
-2. Relying party (bank, institution) sends request to e-Government
-3. e-Government requests temporary certificate from CA
-4. NTA generates session token and distributes to parties
-5. e-Government encrypts data and signs with Token-Egov
-6. CA returns single-use certificate
-7. e-Government forwards signature to relying party
-8. Signed document is presented to user
-
-<p align="center">
-  <img src="images/model-1-diyagram.png" alt="Model 1 – E-Government Centralized Model" width="700">
-  <br>
-  <em>Figure 1: E-Government Centralized Model</em>
-</p>
-
-### Model 2: Isolated Workspace Protocol
-
-**Target Users:** Anyone wanting maximum security with zero technical complexity  
-**User Experience:** Simple app download, one-click signing, automatic cleanup  
-**Core Concept:**
-An isolated environment (Docker-like) is created on the user's device. All key operations are performed in this secure environment and destroyed after the transaction. 
-
-**Security Advantages:**
-- **Identity-independent signature:** Key material is independent of personal data
-- **Even if stolen, identity doesn't leak:** No connection between private key and identity information
-- **Limited impact:** Single-use keys ensure attacks affect only that transaction
-- **Platform agnostic:** Docker on PC, TEE/Secure Enclave on mobile
-
-**Transaction Flow:**
-1. User initiates transaction, verifies identity with 2FA
-2. Isolated workspace is created
-3. uPub and CAPub are loaded
-4. TxID and hash digest are generated
-5. NTA generates session token
-6. Institution sends uPub+CAPub+token to CA
-7. CA generates temporary nPub and sends to user
-8. Isolated environment signs nPub and sends to CA
-9. CA validates and returns temporary certificate
-
-<p align="center">
-  <img src="images/model-2-diyagram.png" alt="Model 2 – Isolated Workspace Protocol" width="700">
-  <br>
-  <em>Figure 2: Isolated Workspace Protocol</em>
-</p>
-
-### Model 3: Hybrid (Transition) Model
-
-**Target Users:** Existing e-signature holders, users wanting mixed usage during transition period
-
-**Core Concept:**
-Ensures existing e-signature holders aren't left out of the system. All transactions are secured with ephemeral certificates in the background.
-
-**Transition Strategy:**
-- **Smooth integration:** Old and new users in the same ecosystem
-- **Security standardization:** All transactions elevated to the same ephemeral level
-- **User habits preserved:** Existing devices continue to be used
-
-**Transaction Flow:**
-1. User applies to institution with existing e-signature
-2. Institution sends transaction summary to user
-3. User signs with their own device
-4. Institution requests transaction initiation from NTA
-5. NTA sends token to both institution and CA
-6. Institution sends token + uPub information to CA
-7. CA generates temporary certificate and returns to institution
-8. Institution completes transaction
-
-<p align="center">
-  <img src="images/model-3-diyagram.png" alt="Model 3 – Hybrid Transition Model" width="700">
-  <br>
-  <em>Figure 3: Hybrid (Transition) Model</em>
-</p>
-
-### Model 4: Online E-Signature Enrollment Process
-
-**Target Users:** New e-signature applicants, travelers, those wanting quick solutions
-
-**Core Concept:**
-User creates key pair on their own device and obtains e-signature. Physical CA visit is unnecessary.
-
-**Revolutionary Features:**
-- **End of physical applications:** E-signature can be obtained even while on vacation
-- **Instant use:** Fully qualified e-signature within minutes
-- **Self-service:** User-controlled entire process
-
-**Transaction Flow:**
-1. User initiates e-signature request through e-Government portal
-2. E-Government requests session token from NTA
-3. Token is sent to both e-Government and CA
-4. Key pair is generated on user's device
-5. E-Government sends public key and token to CA
-6. CA generates certificate and delivers to isolated environment
-7. User now has a real e-signature
-
-<p align="center">
-  <img src="images/model-4-diyagram.png" alt="Model 4 – Online E-Signature Enrollment Process" width="700">
-  <br>
-  <em>Figure 4: Online E-Signature Enrollment Process</em>
-</p>
+Bu model, tüm vatandaşların elektronik imza sahibi olduğu ve tüm resmi işlemlerin e-imza ile gerçekleştirildiği dönemi kapsamaktadır. Model 1, iki alt süreçten oluşmaktadır.
 
 ---
 
-## Security Model
+### 🔐 Model 1A: İlk Kayıt - Kişiye Özel Genel Anahtar Temini (uPub)
 
-### Protocol-Level Security
+Bu model, henüz uPub (kullanıcı public key) sahibi olmayan vatandaşlar için e-Devlet sisteminde kalıcı anahtar saklama sürecidir.
 
-**Ephemeral Key Lifecycle:**
-- Unique key pair for each transaction
-- Automatic destruction after transaction
-- Forward secrecy guarantee
+#### Süreç Akışı
 
-**Proof-of-Possession:**
-- nPub challenge-response mechanism
-- Private key ownership proof required
-- Replay attack protection
+1. **Vatandaş İsteği**: Vatandaş herhangi bir kuruma (Banka, Hastane, Vergi Dairesi vb.) başvuru yapar
+2. **uPub Talebi**: Kurum, e-Devlet'ten vatandaş için uPub talebinde bulunur
+3. **İşlem Talebi (Tx Request)**: e-Devlet, NTA'dan süreci başlatmasını ister
+4. **Oturum Tokeni**: NTA tüm taraflara session token dağıtımı yapar
+5. **Kullanıcı Kimlik Doğrulama + uPub Talebi**: e-Devlet vatandaş kimliğini doğrular ve CA'dan uPub talebi yapar
+6. **Sertifika İşlemi**: CA tarafından kalıcı uPub üretimi gerçekleştirilir
+7. **uPub Yanıtı**: CA'dan e-Devlet'e uPub yanıtı gönderilir
+8. **uPub Saklama**: e-Devlet sistemi uPub'ı kalıcı olarak saklar ve kuruma bildirir
 
-**Session Management:**
-- 30-second validity period
-- Transaction binding (TxID)
-- Token hijacking protection
+**Not**: Bu modelde vatandaşa fiziksel bir uPub teslim edilmez, e-Devlet sistemi uPub'ı güvenli bir şekilde muhafaza eder.
 
-**Certificate Lifecycle:**
-- Single-use certificates
-- Automatic revocation after transaction
-- CRL/OCSP integration
+#### Diyagram
+![Model 1A Diyagramı](images/model_1A_diyagram.png)
 
-### Security Assumptions
-
-This protocol is secure under the following assumptions:
-
-**Infrastructure Level (Existing Responsibilities):**
-- CA HSM security
-- e-Government authentication infrastructure security
-- Network transport security (TLS/HTTPS)
-- NTA availability and integrity
-
-**Implementation Level:**
-- Cryptographically secure random number generation
-- Proper session token management
-- Isolated workspace integrity (TEE/Docker/VM)
-- Device-level basic security hygiene
-
-**Legal Framework:**
-- Turkish e-Signature Law 5070 compliance
-- eIDAS regulation alignment
-- GDPR privacy requirements
+#### Belgeler
+- [Model 1A ile ilgili akademik makale için tıklayın](docs/model_1a_academic_document.md)
+- [Model 1A ile ilgili white paper için tıklayın](docs/model_1a_white_paper.md)
 
 ---
 
-## Threat Model
+### 🔑 Model 1B: Çevrim İçi Resmi Evrak İmzalama Süreci
 
-### Addressed Threats
-- **Long-term key compromise:** Solved by ephemeral approach
-- **Replay attacks:** Prevented by session token and TxID binding
-- **Identity disclosure:** Identity information invisible in signatures
-- **Transaction repudiation:** Prevented by cryptographic binding
-- **Man-in-the-middle:** Protected by TLS and token validation
+Bu model, zaten uPub'a sahip vatandaşların rutin e-imza işlemlerini gerçekleştirdiği süreci ele alır.
 
-### Out of Scope (Infrastructure Level)
-- **CA infrastructure compromise:** General PKI security problem
-- **Government surveillance:** Political/legal issue, outside protocol scope
-- **Device malware:** General computer security problem
-- **Social engineering:** User education issue
-- **Physical device theft:** Device-level security responsibility
+#### Süreç Akışı
 
----
+1. **Vatandaş İsteği**: Vatandaş kuruma işlem talebinde bulunur
+2. **İşlem Talebi**: Kurum NTA'ya işlem talebi (Tx Request) gönderir
+3. **Oturum Tokeni**: NTA, Kurum ve CA'ya session token dağıtır
+4. **uPub İletimi**: Kurum CA'ya uPub gönderir
+5. **İmzalı Belge Talebi**: Kurum CA'dan imzalı belge talebi yapar (Code Request)
+6. **Onay Kodu Talebi**: CA doğrudan vatandaşa "X kurumunun sağladığı A belgesini imzalamak için aşağıdaki kodu girin" şeklinde onay kodu talep eder
+7. **Kod Girişi**: Vatandaş CA'ya onay kodunu girer ("Enter Code")
+8. **İmzalı Belge Teslimi**: CA kuruma imzalı belge + geçici sertifika gönderir
+9. **İşlem Özeti**: CA vatandaşa işlem özeti + onay kodu (OTP) gönderir
 
-## Legal Compliance
+#### CA İşlemleri
+CA'da gerçekleşen işlem: "Generate Ephemeral Key → Sign → Destroy" (Geçici anahtar üret → İmzala → İmha et)
 
-### Turkey
-- **e-Signature Law 5070:** Full compliance
-- **GDPR (KVKK):** Privacy-by-design approach
-- **BTK Regulations:** NTA coordination model
+#### Diyagram
+![Model 1B Diyagramı](images/model_1B_diyagram.png)
 
-### International
-- **eIDAS Regulation:** EU standards compliance
-- **Common Criteria:** Security evaluation standards
-- **ISO 27001:** Information security management
+#### Belgeler
+- [Model 1B ile ilgili akademik makale için tıklayın](docs/model_1b_academic_paper.md)
+- [Model 1B ile ilgili white paper için tıklayın](docs/model_1b_white_paper.md)
 
 ---
 
-## Use Cases
+## 🛡️ Model 2: İzole Çalışma Alanı Protokolü
 
-### Banking Sector
-**Model 1 Scenario:**
-- Elderly customer transfers money via ATM
-- Automatic e-signature in background
-- User sees no technical details
+Docker benzeri mimari ile güvenli işlem ortamı sağlayan gelişmiş güvenlik modelidir.
 
-**Model 2 Scenario:**
-- Corporate customer high-volume transfer
-- Maximum security in isolated workspace
-- Audit trail and compliance requirements
+### Özellikler
 
-### Public Services
-**Universal Access:**
-- All citizens have e-signatures
-- From license applications to tax returns
-- End of paper transaction era
+- Docker benzeri konteyner mimarisi
+- İki yönlü kimlik doğrulama (Two way auth)
+- İzole çalışma ortamı (Isolated Workspace)
+- Gelişmiş anahtar yönetimi (Private Key, CA Public Key, User Public Key)
+- Geçici nPub (ephemeral public key) kullanımı
 
-**Elderly-Friendly:**
-- Barrier-free technical usage
-- Existing e-Government habits preserved
-- Even pension payments are signed
+### Süreç Akışı
 
-### Travel Scenarios
-**With Model 4:**
-- Emergency e-signature need while traveling
-- Online enrollment process
-- Ready for use within minutes
+1. **İki Yönlü Kimlik Doğrulama**: Kullanıcı ile kurum arasında karşılıklı doğrulama talebi
+2. **Anahtar Talebi**: Kurum CA'dan uPub + CAPub talebi yapar
+3. **İzole Ortam Kurulumu**: Kurum kullanıcının izole çalışma alanına uPub + CAPub sağlar
+4. **İşlem Talebi**: Kurum NTA'ya işlem talebi (Tx Request) gönderir
+5. **Oturum Tokeni**: NTA, Kurum ve CA'ya session token dağıtır
+6. **Yetkili Kopya**: CA kuruma yetkili uPub + CAPub kopyasını gönderir
+7. **Geçici nPub Üretimi**: CA'nın geçici anahtar servisi her talep için ephemeral nPub üretir
+8. **İmzalı Geçici nPub Teslimatı**: İmzalı ephemeral nPub kullanıcının izole çalışma alanına teslim edilir
+9. **Geçici Sertifika**: CA kuruma geçici sertifikayı gönderir
 
----
+### Diyagram
+![Model 2 Diyagramı](images/izole_calisma_alani.png)
 
-## Economic Impact
-
-### Cost Analysis
-**User Perspective:**
-- Traditional: 200-500 USD e-signature device + annual fees
-- Ephemeral: Zero hardware cost
-- ROI: Immediately positive return
-
-**Government Perspective:**
-- Infrastructure investment: One-time
-- Scale advantage: 80+ million users
-- Operational efficiency: Paperless savings
-
-**Societal Benefits:**
-- Increased digital inclusion
-- Bureaucratic efficiency
-- Fraud reduction benefits
+### Belgeler
+- [Model 2 ile ilgili akademik makale için tıklayın](docs/model_2_academic_document.md)
+- [Model 2 ile ilgili white paper için tıklayın](docs/model_2_white_paper.md)
 
 ---
 
-## Technical Requirements
+## 🔄 Model 3: Hibrit (Geçiş) Modeli
 
-### Minimum System Requirements
+Bu model, mevcut geleneksel sistemlerden yeni e-imza sistemine geçiş sürecinde kullanılan hibrit yaklaşımdır.
 
-**PC/Desktop:**
-- Docker Desktop or VM support
-- Modern web browser (Chrome 90+, Firefox 88+)
-- 4GB RAM (for isolated workspace)
-- Hardware security module (optional)
+### Özellikler
 
-**Mobile:**
-- Android 8+ (TEE support)
-- iOS 12+ (Secure Enclave)
-- Biometric authentication capability
-- 2GB available storage
+- Dijital imza entegrasyonu (USER + Digital Sign)
+- Mevcut e-imza altyapısı ile uyumluluk
+- Kurumsal e-imza süreçleri
+- NTA ve CA arasında koordinasyon
+- Geçiş dönemi esnekliği
 
-### Platform-Specific Isolation
+### Süreç Akışı
 
-**Android:**
-- Samsung Knox Container
-- Android Work Profile
-- Hardware-backed Keystore
-- ARM TrustZone TEE
+1. **Kullanıcı Talebi**: Kullanıcı kuruma işlem talebinde bulunur
+2. **Kurumsal E-İmza Talebi**: Kurum kullanıcıdan dijital imza ile kurumsal e-imza talebi yapar
+3. **İmzalı Belge**: Kullanıcı kuruma imzalı belge gönderir
+4. **İşlem Talebi**: Kurum NTA'ya işlem talebi gönderir
+5. **Oturum Tokeni**: NTA, Kurum ve CA'ya session token dağıtır
+6. **CA İletişimi**: Kurum CA'ya NTA session token + uPub gönderir
+7. **Geçici Sertifika**: CA kuruma geçici sertifika gönderir
+8. **Başarı Mesajı**: Kurum kullanıcıya başarı mesajı gönderir
 
-**iOS:**
-- Secure Enclave
-- Hardware Security Module integration
-- Keychain Services
-- Touch/Face ID integration
+### Diyagram
+![Model 3 Diyagramı](images/model_hibrit_diyagram.png)
 
-**PC:**
-- Docker containerization
-- Windows Sandbox
-- VMware/VirtualBox VM
-- Hardware HSM integration
+### Belgeler
+- [Model 3 ile ilgili akademik makale için tıklayın](docs/model_3_academic_document.md)
+- [Model 3 ile ilgili white paper için tıklayın](docs/model_3_white_paper.md)
 
 ---
 
-## Implementation Roadmap
+## 📝 Model 4: Çevrim İçi E-İmza Kayıt Süreci
 
-### Phase 1: Pilot Program (6 months)
-- Model 1 implementation
-- Selected public institutions
-- 10,000 user test
+Vatandaşların tamamen çevrim içi ortamda e-imza sertifikası almalarını sağlayan gelişmiş kayıt sürecidir.
 
-### Phase 2: Banking Integration (6 months)
-- Model 2 implementation
-- Pilot bank partnerships
-- 100,000 user capacity
+### Özellikler
 
-### Phase 3: Hybrid Transition (12 months)
-- Model 3 implementation
-- Existing e-signature holder integration
-- 1 million+ user scale
+- İzole çalışma ortamı entegrasyonu
+- Doğrudan CA teslim sistemi
+- Çoklu güvenlik protokolleri
+- E-Government anahtarı ile veri şifreleme
+- Nitelikli kullanıcı sertifikası (Qualified user certificate)
 
-### Phase 4: National Deployment (18 months)
-- All models active
-- 80+ million citizen capacity
-- International expansion preparation
+### Süreç Akışı
 
----
+1. **Dijital İmza Talebi**: Kullanıcı e-Devlet'ten dijital imza talebi yapar
+2. **İşlem Talebi**: e-Devlet NTA'ya işlem talebi (Request Tx) gönderir
+3. **Çoklu Oturum Dağıtımı**: NTA, e-Devlet, CA ve kullanıcıya session token dağıtır
+4. **Veri Şifreleme ve İmzalama**: e-Devlet kullanıcı verisini şifreler ve e-Devlet anahtarı ile imzalayarak CA'ya gönderir
+5. **Doğrudan Sertifika Teslimi**: CA nitelikli kullanıcı sertifikasını doğrudan kullanıcının izole çalışma alanına teslim eder
 
-## Responsibility Boundaries
+### Anahtar Yönetimi
+İzole çalışma alanında:
+- Private Key (uPri)
+- CA Public Key (CAPub)  
+- User Public Key (uPub)
 
-### Protocol Responsibility
-This system guarantees the following security features:
-- Ephemeral key lifecycle management
-- Cryptographic transaction binding
-- Session token validation
-- Certificate revocation handling
+### Diyagram
+![Model 4 Diyagramı](images/online_eimza_kayit_diyagram.png)
 
-### Infrastructure Responsibility (Out of Scope)
-The following topics are the responsibility of existing infrastructure owners:
-- e-Government infrastructure availability
-- CA HSM security management
-- Network-level DDoS protection
-- Government policy compliance
-
-This separation is analogous to Google Auth: OAuth protocol is secure, but Google's server security is Google's responsibility.
+### Belgeler
+- [Model 4 ile ilgili akademik makale için tıklayın](docs/model_4_academic_document.md)
+- [Model 4 ile ilgili white paper için tıklayın](docs/model_4_white_paper.md)
 
 ---
 
-## Contributing
+## ⚙️ Teknik Gereksinimler
 
-### Developer Community
-- GitHub repository: [project-link]
-- Issue tracking and feature requests
-- Security vulnerability disclosure
-- Documentation improvements
+### Güvenlik Standartları
 
-### Academic Collaboration
-- Research paper collaborations
-- Security analysis partnerships
-- International standardization efforts
+- **PKI Altyapısı**: Public Key Infrastructure desteği
+- **SSL/TLS**: Güvenli iletişim protokolleri
+- **Oturum Yönetimi**: Güvenli token tabanlı oturum yönetimi
+- **Şifreleme**: AES-256, RSA-2048 minimum standartları
+- **İki Yönlü Kimlik Doğrulama**: Mutual authentication desteği
+
+### Sistem Gereksinimleri
+
+- **İzole Ortam**: Docker veya benzeri konteyner teknolojisi
+- **Veritabanı**: Güvenli sertifika ve anahtar deposu
+- **Ağ Güvenliği**: Firewall ve intrusion detection systems
+- **Audit Trail**: Tüm işlemlerin kayıt altına alınması
+- **Session Management**: Çoklu oturum yönetimi kapasitesi
+
+### Uyumluluk
+
+- **ETSI Standartları**: Avrupa elektronik imza standartları
+- **Türk Standartları**: TSE ve BTK düzenlemelerine uyumluluk
+- **Uluslararası Standartlar**: ISO/IEC 27001, Common Criteria
+- **eIDAS Uyumluluğu**: Avrupa elektronik kimlik düzenlemelerine uyum
+
+### Model Karşılaştırması
+
+| Model | Kullanım Amacı | Güvenlik Seviyesi | Karmaşıklık | uPub Yönetimi |
+|-------|----------------|-------------------|--------------|---------------|
+| **Model 1A** | İlk uPub kaydı | Orta | Düşük | e-Devlet'te kalıcı saklama |
+| **Model 1B** | Rutin e-imza işlemleri | Orta | Düşük | Sistemde mevcut uPub kullanımı |
+| **Model 2** | Yüksek güvenlik gerektiren işlemler | Çok Yüksek | Yüksek | İzole ortamda çoklu anahtar yönetimi |
+| **Model 3** | Geçiş dönemi işlemleri | Orta | Orta | Hibrit anahtar yönetimi |
+| **Model 4** | Online sertifika kayıt | Yüksek | Orta | İzole ortam + doğrudan CA teslim |
 
 ---
 
-## Contact
+## 📄 Lisans
 
-**Project Owner:** Güven Acar  
-**Email:** guvenacar@gmail.com  
-**GitHub:** https://github.com/guvenacar/ephemeral-e-signature
+Bu proje [MIT Lisansı](LICENSE) altında lisanslanmıştır.
 
 ---
 
-## License
+## 🤝 Katkıda Bulunma
 
-[License information to be added]
+Projeye katkıda bulunmak için lütfen [CONTRIBUTING.md](CONTRIBUTING.md) dosyasını inceleyiniz.
 
 ---
 
-## Conclusion
+## 📞 İletişim
 
-This system offers a paradigmatic change in digital identity and e-signature domains. By harmonizing security, usability, and societal inclusivity, it creates a truly universal digital signature ecosystem.
+Sorularınız için: [e-imza-destek@example.com](mailto:e-imza-destek@example.com)
 
-Just as the internet became universal, this system aims for e-signatures to become a natural part of every citizen's daily life. Our vision is a future where everyone can conduct secure digital transactions regardless of age, technical knowledge, or economic status.
+**Son güncelleme**: Eylül 2025
