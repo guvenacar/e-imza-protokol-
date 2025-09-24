@@ -88,9 +88,9 @@ CA'da gerçekleşen işlem: "Generate Ephemeral Key → Sign → Destroy" (Geçi
 
 ---
 
-## 🛡️ Model 2: İzole Çalışma Alanı Protokolü
+## 🛡️ Model 2: İzole Çalışma Alanı Protokolü (5070 sayılı Elektronik İmza Kanunu'na uygun)
 
-Docker benzeri mimari ile güvenli işlem ortamı sağlayan gelişmiş güvenlik modelidir.
+Docker benzeri mimari ile güvenli işlem ortamı sağlayan gelişmiş güvenlik modelidir. 
 
 ### Özellikler
 
@@ -223,11 +223,6 @@ Vatandaşların tamamen çevrim içi ortamda e-imza sertifikası almalarını sa
 | **Model 3** | Geçiş dönemi işlemleri | Orta | Orta | Hibrit anahtar yönetimi |
 | **Model 4** | Online sertifika kayıt | Yüksek | Orta | İzole ortam + doğrudan CA teslim |
 
----
-
-## 📄 Lisans
-
-Bu proje [MIT Lisansı](LICENSE) altında lisanslanmıştır.
 
 ---
 
