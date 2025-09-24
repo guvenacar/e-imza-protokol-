@@ -1,7 +1,9 @@
 # Ephemeral E-İmza Projesi
 
-> **Dijital imzalarda paradigma değişimi: Kullanıcılar işlemi onaylar, CA onlar adına imzalar.**  
-> Tek kullanımlık imzalar, sıfır donanım maliyeti, tam işlem izolasyonu.
+
+**Dijital imzalarda paradigma değişimi: Kullanıcılar işlemi onaylar, CA onlar adına imzalar.**  
+Ephemeral E-İmza Sistemi, dünyada henüz hiçbir ülkede uygulanmayan, Türkiye’yi dijital imza teknolojisinde takip eden değil takip edilen ülke konumuna taşıyacak devrimsel bir protokoldür. Bugün Türkiye’de e-imza kullanım oranı %5’in altında olup, vatandaşlar yüksek donanım maliyetleri (500-1500 TL) ve karmaşık süreçler nedeniyle e-imzadan uzak durmaktadır. Mevcut modelde yıllarca geçerli anahtarların çalınması hâlinde geçmiş ve gelecek tüm işlemler tehlikeye girebilmektedir. Ephemeral E-İmza ile bu paradigma tamamen değişmektedir: Kullanıcılar artık belgeleri imzalamak zorunda değildir, yalnızca işlemi onaylar; belgeyi bu işleme özel tek kullanımlık anahtar ile kullanıcı adına imzalayan CA’dır. Böylece her işlem birbirinden izole edilir, güvenlik ihlalleri yalnızca ilgili işlemi etkiler ve donanım maliyeti tamamen ortadan kalkar. Bu yaklaşım, mevcut kamu altyapılarıyla ek maliyet oluşturmadan 80 milyon vatandaşın e-imza sahibi olmasını mümkün kılar, e-Devlet ile entegre bir şekilde hızla devreye alınabilir ve Türkiye’yi bu alanda dünya lideri yapabilecek bir fırsat sunar.  
+
 
 ![Protokol Akış Diyagramı](images/model_1B_diyagram.png)
 
