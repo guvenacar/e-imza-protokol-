@@ -41,7 +41,7 @@ Bu görev ayrımı, hiçbir tarafın tek başına tam kontrol sahibi olmamasın�
 Kullanıcının henüz uPub (kalıcı public key) sahibi olmadığı senaryoda devreye girer.  
 e-Devlet üzerinden uPub talebi yapılır ve CA kullanıcının kimlik bilgilerini alıp kaydeder.
 
-![Model 1A Diyagramı](images/model_1A_diyagram_TR.png)
+<img src="images/model_1A_diyagram_TR.png" alt="Model 1A Diyagramı" width="500">
 
 ---
 
@@ -50,7 +50,7 @@ Kullanıcı e-Devlet’te kayıtlı bir uPub’a sahip olduğunda e-Devlet süre
 Tüm işlem kullanıcı – kurum – CA arasında yürütülür.  
 Bu model merkeziyetçilik eleştirilerine en uygun cevaptır.
 
-![Model 1B Diyagramı](images/model_1B_diyagram_TR.png)
+<img src="images/model_1B_diyagram_TR.png" alt="Model 1<b  Diyagramı" width="500">
 
 ---
 
@@ -59,10 +59,7 @@ Profesyonel kullanıcılar (avukat, noter, banka yöneticisi vb.) için tasarlan
 Kullanıcının cihazında Docker benzeri izole bir çalışma alanı oluşturularak işlem güvenliği en üst seviyeye çıkarılır.  
 Kullanıcı, CA tarafından üretilen nPub’ı kendi nPriv ile imzalar ve bu sayede işlemi onaylar.
 
-![Model 2 Diyagramı](images/izole_calisma_alani_TR.png)
-
-
-![Model 2 Diyagramı](images/online_eimza_kayit_diyagram_TR.png)
+<img src="images/izole_calisma_alani_TR.png" alt="Model 2 Diyagramı" width="500">
 
 ---
 
@@ -71,7 +68,7 @@ Halihazırda nitelikli e-imza sahibi olan kullanıcıların sisteme entegrasyonu
 Kullanıcı mevcut cihazıyla işlemi **onaylar**, CA geçici anahtar üretip belgeyi imzalar.  
 Bu sayede “tek imza > tüm işlemler” riskinden kurtulunur.
 
-![Model Hibrit Diyagramı](images/model_hibrit_diyagram_TR.png)
+<img src="images/model_hibrit_diyagram_TR.png" alt="Model Hibrit Diyagramı" width="500">
 
 ---
 
@@ -80,7 +77,7 @@ Bu süreç, Model 1A ve Model 2 için ilk kayıt aşamasıdır.
 Kullanıcı verisi e-Devlet tarafından imzalanarak CA’ya gönderilir.  
 CA bu veriyi doğrular ve kimlik bilgisini veritabanına kaydeder.
 
-![Online E-İmza Kayıt Diyagramı](images/online_eimza_kayit_diyagram_TR.png)
+![Online E-İmza Kayıt Diyagramı](<img src="images/online_eimza_kayit_diyagram_TR.png" alt="online_eimza_kayit" width="500">
 
 ---
 
