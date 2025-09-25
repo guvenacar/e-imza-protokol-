@@ -22,25 +22,28 @@ Bu tasarım sayesinde hiçbir taraf tek başına tüm verilere ve anahtarlara sa
 
 ### Model 1A – İlk Kayıt
 
-<<\<buraya model 1A diyagramı gelecek>>>
+![Model 1A Diyagramı](images/model_1A_diyagram_TR.png)
 
 Kullanıcının ilk kez sisteme kayıt olduğu aşamadır. Kullanıcı e-Devlet üzerinden uPub talep eder, BTK işlem jetonunu üretir, CA uPub’ı oluşturur ve e-Devlet’e kaydeder. CA kullanıcıya ait açık kimlik bilgisini saklamaz, yalnızca uPub + e-Devlet imzalı kayıt kanıtını saklar.
 
 ### Model 1B – İşlem Aşaması
 
-<<\<buraya model 1B diyagramı gelecek>>>
+![Model 1B Diyagramı](images/model_1B_diyagram_TR.png)
 
 Artık e-Devlet süreç dışında kalır. Kullanıcı kurum ile işlem başlatır, BTK işlem jetonu üretir, CA kullanıcının onayını doğrular, nPriv/nPub üretir ve belgeyi imzalar. nPriv işlem sonunda imha edilir.
 
 ### Model 2 – İzole Çalışma Alanı Protokolü
 
-<<\<buraya model 2 diyagramı gelecek>>>
+![Model 2 Diyagramı](images/izole_calisma_alani_TR.png)
+
+![Model Başvuru Diyagramı](images/online_eimza_kayit_diyagram_TR.png)
+
 
 Kullanıcının cihazında izole bir çalışma alanı (sandbox) oluşturulur. CA nPub üretip kullanıcıya gönderir. Kullanıcı nPub’ı kendi uPriv’u ile imzalar (signed nPub). CA signed nPub’ı kullanıcının uPub’ı ile doğrular, böylece kullanıcının onayı kanıtlanır. CA belgeyi nPriv ile imzalar, nPriv’i imha eder, kuruma nPub + geçici sertifika + imzalı belge gönderilir.
 
 ### Model 3 – Hibrit Model
 
-<<\<buraya model 3 diyagramı gelecek>>>
+![Model 1A Diyagramı](images/model_hibrit_diyagram_TR.png)
 
 Bu model, mevcut e-imza sahiplerinin sisteme entegrasyonu içindir. Kullanıcı mevcut e-imzasıyla yalnızca onay verir, belgeyi doğrudan imzalamaz. CA bu onayı doğrular, nPriv/nPub üretir ve belgeyi nPriv ile imzalar. Böylece kullanıcı anahtarının sızması durumunda bile sadece ilgili işlem tehlikeye girer.
 
