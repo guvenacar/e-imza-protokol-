@@ -23,7 +23,7 @@ Bu tasarım sayesinde hiçbir taraf tek başına tüm verilere ve anahtarlara sa
 ### Model 1A – İlk Kayıt
 
 <center>
-<img src="images/model_1A_diyagram_TR.png" alt="Model 1A Diyagramı" width="500">
+<img src="images/model_1A_diyagram_TR.png" alt="Model 1A Diyagramı" width="600">
 </center>
 
 Kullanıcının ilk kez sisteme kayıt olduğu aşamadır. Kullanıcı e-Devlet üzerinden uPub talep eder, BTK işlem jetonunu üretir, CA uPub’ı oluşturur ve e-Devlet’e kaydeder. CA kullanıcıya ait açık kimlik bilgisini saklamaz, yalnızca uPub + e-Devlet imzalı kayıt kanıtını saklar.
@@ -31,7 +31,7 @@ Kullanıcının ilk kez sisteme kayıt olduğu aşamadır. Kullanıcı e-Devlet 
 ### Model 1B – İşlem Aşaması
 
 <center>
-<img src="images/model_1B_diyagram_TR.png" alt="Model 1<b  Diyagramı" width="500">
+<img src="images/model_1B_diyagram_TR.png" alt="Model 1<b  Diyagramı" width="600">
 </center>
 
 Artık e-Devlet süreç dışında kalır. Kullanıcı kurum ile işlem başlatır, BTK işlem jetonu üretir, CA kullanıcının onayını doğrular, nPriv/nPub üretir ve belgeyi imzalar. nPriv işlem sonunda imha edilir.
@@ -39,11 +39,11 @@ Artık e-Devlet süreç dışında kalır. Kullanıcı kurum ile işlem başlat�
 ### Model 2 – İzole Çalışma Alanı Protokolü
 
 <center>
-<img src="images/online_eimza_kayit_diyagram_TR.png" alt="online_eimza_kayit" width="500">
+<img src="images/online_eimza_kayit_diyagram_TR.png" alt="online_eimza_kayit" width="600">
 </center>
 
 <center>
-<img src="images/izole_calisma_alani_TR.png" alt="Model 2 Diyagramı" width="500">
+<img src="images/izole_calisma_alani_TR.png" alt="Model 2 Diyagramı" width="600">
 </center>
 
 
@@ -52,7 +52,7 @@ Kullanıcının cihazında izole bir çalışma alanı (sandbox) oluşturulur. C
 ### Model 3 – Hibrit Model
 
 <center>
-<img src="images/model_hibrit_diyagram_TR.png" alt="Model Hibrit Diyagramı" width="500">
+<img src="images/model_hibrit_diyagram_TR.png" alt="Model Hibrit Diyagramı" width="600">
 </center>
 
 Bu model, mevcut e-imza sahiplerinin sisteme entegrasyonu içindir. Kullanıcı mevcut e-imzasıyla yalnızca onay verir, belgeyi doğrudan imzalamaz. CA bu onayı doğrular, nPriv/nPub üretir ve belgeyi nPriv ile imzalar. Böylece kullanıcı anahtarının sızması durumunda bile sadece ilgili işlem tehlikeye girer.
