@@ -40,45 +40,45 @@ Bu görev ayrımı, hiçbir tarafın tek başına tam kontrol sahibi olmamasın�
 ## Model 1A – İlk Kayıt Aşaması
 Kullanıcının henüz uPub (kalıcı public key) sahibi olmadığı senaryoda devreye girer.  
 e-Devlet üzerinden uPub talebi yapılır ve CA kullanıcının kimlik bilgilerini alıp kaydeder.
-
+<center>
 <img src="images/model_1A_diyagram_TR.png" alt="Model 1A Diyagramı" width="500">
-
+</center>
 ---
 
 ## Model 1B – Kullanıcı uPub Sahibi İse
 Kullanıcı e-Devlet’te kayıtlı bir uPub’a sahip olduğunda e-Devlet süreç dışında kalır.  
 Tüm işlem kullanıcı – kurum – CA arasında yürütülür.  
 Bu model merkeziyetçilik eleştirilerine en uygun cevaptır.
-
+<center>
 <img src="images/model_1B_diyagram_TR.png" alt="Model 1<b  Diyagramı" width="500">
-
+</center>
 ---
 
 ## Model 2 – İzole Çalışma Alanı Protokolü
 Profesyonel kullanıcılar (avukat, noter, banka yöneticisi vb.) için tasarlanmıştır.  
 Kullanıcının cihazında Docker benzeri izole bir çalışma alanı oluşturularak işlem güvenliği en üst seviyeye çıkarılır.  
 Kullanıcı, CA tarafından üretilen nPub’ı kendi nPriv ile imzalar ve bu sayede işlemi onaylar.
-
+<center>
 <img src="images/izole_calisma_alani_TR.png" alt="Model 2 Diyagramı" width="500">
-
+</center>
 ---
 
 ## Model 3 – Hibrit (Geçiş) Modeli
 Halihazırda nitelikli e-imza sahibi olan kullanıcıların sisteme entegrasyonunu sağlar.  
 Kullanıcı mevcut cihazıyla işlemi **onaylar**, CA geçici anahtar üretip belgeyi imzalar.  
 Bu sayede “tek imza > tüm işlemler” riskinden kurtulunur.
-
+<center>
 <img src="images/model_hibrit_diyagram_TR.png" alt="Model Hibrit Diyagramı" width="500">
-
+</center>
 ---
 
 ## Online E-İmza Kayıt Süreci
 Bu süreç, Model 1A ve Model 2 için ilk kayıt aşamasıdır.  
 Kullanıcı verisi e-Devlet tarafından imzalanarak CA’ya gönderilir.  
 CA bu veriyi doğrular ve kimlik bilgisini veritabanına kaydeder.
-
-![Online E-İmza Kayıt Diyagramı](<img src="images/online_eimza_kayit_diyagram_TR.png" alt="online_eimza_kayit" width="500">
-
+<center>
+<img src="images/online_eimza_kayit_diyagram_TR.png" alt="online_eimza_kayit" width="500">
+</center>
 ---
 
 ## Güvenlik Modeli
