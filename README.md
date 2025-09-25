@@ -52,7 +52,7 @@ Bu model, henüz uPub (kullanıcı public key) sahibi olmayan vatandaşlar için
 **Not**: Bu modelde vatandaşa fiziksel bir uPub teslim edilmez, e-Devlet sistemi uPub'ı güvenli bir şekilde muhafaza eder.
 
 #### Diyagram
-![Model 1A Diyagramı](images/model_1A_diyagram.png)
+![Model 1A Diyagramı](images/model_1A_diyagram_TR.png)
 
 #### Belgeler
 - [Model 1A ile ilgili akademik makale için tıklayın](docs/model_1a_academic_document.md)
@@ -80,7 +80,7 @@ Bu model, zaten uPub'a sahip vatandaşların rutin e-imza işlemlerini gerçekle
 CA'da gerçekleşen işlem: "Generate Ephemeral Key → Sign → Destroy" (Geçici anahtar üret → İmzala → İmha et)
 
 #### Diyagram
-![Model 1B Diyagramı](images/model_1B_diyagram.png)
+![Model 1B Diyagramı](images/model_1B_diyagram_TR.png)
 
 #### Belgeler
 - [Model 1B ile ilgili akademik makale için tıklayın](docs/model_1b_academic_paper.md)
@@ -113,7 +113,7 @@ Docker benzeri mimari ile güvenli işlem ortamı sağlayan gelişmiş güvenlik
 9. **Geçici Sertifika**: CA kuruma geçici sertifikayı gönderir
 
 ### Diyagram
-![Model 2 Diyagramı](images/izole_calisma_alani.png)
+![Model 2 Diyagramı](images/izole_calisma_alani_TR.png)
 
 ### Belgeler
 - [Model 2 ile ilgili akademik makale için tıklayın](docs/model_2_academic_document.md)
@@ -145,7 +145,7 @@ Bu model, mevcut geleneksel sistemlerden yeni e-imza sistemine geçiş sürecind
 8. **Başarı Mesajı**: Kurum kullanıcıya başarı mesajı gönderir
 
 ### Diyagram
-![Model 3 Diyagramı](images/model_hibrit_diyagram.png)
+![Model 3 Diyagramı](images/model_hibrit_diyagram_TR.png)
 
 ### Belgeler
 - [Model 3 ile ilgili akademik makale için tıklayın](docs/model_3_academic_document.md)
@@ -180,7 +180,7 @@ Vatandaşların tamamen çevrim içi ortamda e-imza sertifikası almalarını sa
 - User Public Key (uPub)
 
 ### Diyagram
-![Model 4 Diyagramı](images/online_eimza_kayit_diyagram.png)
+![Model 4 Diyagramı](images/online_eimza_kayit_diyagram_TR.png)
 
 ### Belgeler
 - [Model 4 ile ilgili akademik makale için tıklayın](docs/model_4_academic_document.md)
