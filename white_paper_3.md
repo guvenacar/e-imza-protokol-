@@ -61,6 +61,9 @@ Kullanıcı, CA tarafından üretilen nPub’ı kendi nPriv ile imzalar ve bu sa
 
 ![Model 2 Diyagramı](images/izole_calisma_alani_TR.png)
 
+
+![Model 2 Diyagramı](images/online_eimza_kayit_diyagram_TR.png)
+
 ---
 
 ## Model 3 – Hibrit (Geçiş) Modeli
