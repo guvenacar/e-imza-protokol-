@@ -1,5 +1,4 @@
-# Ephemeral E-İmza Protokolü White Paper
-
+# Ephemeral E-İmza Protokolü 
 ## Özet
 Bu çalışma, mevcut elektronik imza altyapısına yeni bir bakış açısı getirerek **tek işlem → tek anahtar → tek imza** prensibini hayata geçirir.  
 Klasik e-imza sistemlerinde 3 yıl geçerli bir özel anahtar ile yapılan tüm işlemler aynı güvenlik köküne bağlıdır.  
