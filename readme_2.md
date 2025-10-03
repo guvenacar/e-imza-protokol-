@@ -77,39 +77,34 @@ E-imza sahibi resmi bir işlem başlatmak istediğinde CA (Sertifika Hizmet Sağ
 <img src="images/online_eimza_kayit_diyagram_TR.png" alt="İlk Kayıt Süreci" width="600">
 </center>
 
-1. Kullanıcı → e-Devlet:
-   Kimlik doğrulama (TC Kimlik No + Şifre/Biyometrik)
+## Model 2A – İlk Kayıt Süreci
 
-2. e-Devlet → Kullanıcı:
-   Kimlik onayı
+1. **Kullanıcı → e-Devlet:** Dijital imza başvurusu
 
-3. Kullanıcı → CA Seçimi:
-   Hangi CA ile çalışmak istediğini seçer (örn: E-Güven, Kamu SM)
+2. **e-Devlet:** Kimlik doğrulama
 
-4. Kullanıcı Cihazında:
-   • Seçilen CA için izole alan oluşturulur
-   • İzole alanda uPriv/uPub anahtar çifti üretilir
-   • Seçilen CA'nın CAPub'u izole alana yüklenir
+3. **e-Devlet → Kullanıcı:** İzole alan uygulamasını indir
 
-5. Kullanıcı → CA:
-   uPub + e-Devlet kimlik doğrulama jetonu
+4. **Kullanıcı Cihazı:** İzole alan oluşturulur, uPriv/uPub üretilir
 
-6. CA → e-Devlet API:
-   Kimlik doğrulama jetonunu kontrol eder
+5. **Kullanıcı:** CA seçimi yapar
 
-7. e-Devlet → CA:
-   Kullanıcı kimliği onayı
+6. **e-Devlet → BTK:** Kayıt işlemi başlatma
 
-8. CA:
-   • uPub'u kullanıcı hesabına kaydeder
-   • Kullanıcı sertifikası (uCert) oluşturur
-   • uCert'i yayınlar
+7. **BTK → e-Devlet, CA, Kullanıcı:** İşlem jetonu
 
-9. CA → Kullanıcı İzole Alanı:
-   uCert (kullanıcı sertifikası)
+8. **e-Devlet → CA (HTTPS/TLS):**
+   - Kullanıcı kimlik bilgileri
+   - uPub
+   - e-Devlet dijital imzası
 
-10. İzole Alan:
-    uCert'i saklar ve ilk kayıt tamamlanır
+9. **CA:**
+   - Kullanıcıyı kaydeder (uPub ile)
+   - uCert oluşturur
+
+10. **CA → Kullanıcı İzole Alanı:** uCert, CAPub teslim edilir
+
+11. **Kayıt tamamlandı**
 
 #### Model 2B – İşlem Aşaması
 <center>
@@ -149,14 +144,6 @@ Bu modelde kullanıcının cihazında izole bir çalışma alanı (sandbox, dock
    • Geçici Sertifika (sCert)
 
 
-
-
-  
-
-
-
-
-
 ### Kurum–BTK–CA Süreci
 <center>
 <img src="images/Kurum_BTK_CA_sureci_TR.png" alt="Model 2 Diyagramı" width="600">
@@ -194,16 +181,10 @@ BTK sürece müdahil olmaz, işlem detayına erişmez, kullanıcıya dair PII bi
    • İşlem jetonu (doğrulama için)
 
 6. CA:
-   • İşlem jetonunu BTK ile doğrular
-   • Jetonun geçerliliğini kontrol eder
    • Kurum ve CA bilgilerinin eşleştiğini teyit eder
-
-7. CA → İşlem Devam Eder:
-   Jeton geçerliyse Model 2B akışı başlar
-
-8. İşlem Tamamlandığında:
-   CA → BTK: İşlem tamamlandı bildirimi
-   BTK → Jetonu pasif yapar (tek kullanımlık)
+   • Tek kullanımlık; sPriv, sPub, sCert üretir
+   • Kurumdan gelen belge HASH'ini sPriv ile imzalar
+   • Kuruma; token_id, imzalanmış HASH'i, sPub'ı, sCert'i gönderir
 
 ---
 
@@ -212,56 +193,64 @@ BTK sürece müdahil olmaz, işlem detayına erişmez, kullanıcıya dair PII bi
 <img src="images/model_hibrit_diyagram_TR.png" alt="Model Hibrit Diyagramı" width="600">
 </center>
 
-1. Kullanıcı → Kurum:
-   İşlem talebi (mevcut e-imza cihazı ile)
+# Model 3 — Doğru Metin Akışı (Markdown)
+1. Kullanıcı → Kurum
+   - İşlem talebi (klasik e-imza sahibi)
 
-2. Kurum → Kullanıcı:
-   • Belge + Belge HASH'i
-   • "Onaylıyor musunuz?" sorusu
+2. Kurum → Kullanıcı  
+   - Belge + HASH + "Onaylıyor musunuz?"
 
-3. Kullanıcı:
-   • Belgeyi inceler
-   • Mevcut e-imza cihazını taktar (USB token/akıllı kart)
-   • Belge HASH'ini mevcut özel anahtarı ile imzalar
-   • Bu sadece ONAY imzasıdır, belgeyi imzalamaz
+3. Kullanıcı → Kurum
+   - uPriv ile imzalanmış HASH (onay imzası)
+   - uPub (kimlik doğrulama için)
+   ⚠️ Bu sadece "işlem onayı"dır, nihai belge imzası değil
 
-4. Kullanıcı → Kurum:
-   Klasik e-imza ile imzalanmış Belge HASH'i (onay imzası)
+4. Kurum → BTK
+   - İşlem başlatma talebi: {kurum_ID, işlem_tipi, CA_ID}
 
-5. Kurum → BTK:
-   İşlem başlatma talebi
+5. BTK → Kurum & CA
+   - İşlem jetonu: {token_id, zaman_mührü, TTL, ca_ID, kurum_ID} + BTK_imza
 
-6. BTK → Kurum & CA:
-   İşlem jetonu
+6. Kurum → CA
+   - {Belge HASH, onay_imzası, uPub, token_id}
 
-7. Kurum → CA:
-   • Kullanıcının klasik e-imza sertifikası
-   • Onay imzası (klasik e-imza ile imzalanmış HASH)
-   • Belge HASH'i
-   • İşlem jetonu
+7. CA İşlemleri:  
+   a) Token doğrulama (BTK imzası + TTL kontrolü)  
+   b) uPub ile onay_imzasını doğrulama  
+   c) uPub'dan kullanıcı kimliğini tespit edip veritabanından bilgilere erişme  
+   d) Geçici anahtar çifti üretme: (sPriv, sPub)  
+   e) Geçici sertifika üretme: sCert  
+   f) Belge HASH'ini sPriv ile imzalama  
 
-8. CA:
-   • Klasik e-imza sertifikasını doğrular
-   • Onay imzasını klasik sertifika ile kontrol eder
-   • Kullanıcı onayını teyit eder
-   • Yeni tek kullanımlık sPriv/sPub üretir
+8. CA → Kurum
+   - {sPriv ile imzalanmış HASH, sPub, sCert, token_id}
 
-9. CA:
-   • Belge HASH'ini sPriv ile imzalar
-   • sPriv'i kalıcı olarak imha eder
-   • Geçici sertifika (sCert) oluşturur
+## CA doğrulamaları
 
-10. CA → Kurum:
-    • sPriv ile imzalanmış Belge HASH'i
-    • sPub (doğrulama için)
-    • Geçici sertifika (sCert)
-    • İşlem jetonu
+* BTK jetonunun **imzası**, **TTL** ve **tek-kullanım** kontrolü.
+* **uPub** ile **onay imzasını** doğrulama.
+* **uPub**’ı kendi kayıtlarında (**CRL/OCSP/kendi dizini**) eşleştirip durumunu kontrol etme.
 
-11. Kurum:
-    • İmzalı HASH'i sPub ile doğrular
-    • sCert'i CA'nın ana sertifikası ile doğrular
-    • İşlem jetonunu kontrol eder
-    • İşlemi tamamlar ve kaydeder
+  * *(CA, kullanıcı sertifikasını Kurumdan almaz; kendisi tespit eder.)*
+* Bu kontrollerle **kullanıcı onayını** teyit eder.
+
+## CA üretim & imza
+
+* **Tek kullanımlık sPriv/sPub** üretir.
+* **Belge HASH’ini sPriv** ile imzalar → **sSig**.
+* **sPriv** HSM içinde **derhal imha edilir**.
+* **sCert** (geçici sertifika) düzenlenir; **token_id/TTL/tek-kullanım** bilgisi bağlanır.
+
+**CA → Kurum**
+
+* `{sSig, sPub, sCert, token_id}` (TLS).
+
+## Kurum doğrulamaları
+
+* **sSig**’ı **sPub** ile; **sCert**’i **CA kök/ara sertifikası**yla doğrula.
+* **BTK jetonu** için **imza/TTL/tek-kullanım** kontrolü.
+* İşlemi tamamla ve kaydet; **kullanıcıya sonuç bildir**.
+
 
 
 Bu model, mevcut e-imza sahiplerinin sisteme entegrasyonu için geliştirilmiştir.  
