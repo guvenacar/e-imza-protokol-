@@ -113,35 +113,34 @@ E-imza sahibi resmi bir işlem başlatmak istediğinde CA (Sertifika Hizmet Sağ
 
 Bu modelde kullanıcının cihazında izole bir çalışma alanı (sandbox, docker benzeri) oluşturulur.  
 
+1. **Kullanıcı → İzole Alan**
+   İşlem Talebi
 
-1. Kullanıcı → İşlem Talebi → Kurum
+2. **Kurum → İzole Alan**
+   uPub + Belge + Belge HASH'i
 
-2. Kurum → İzole Alan:
-   uPub + Belge + HASH + CAPub
-   (İzole alan provision edilir)
+3. **Kurum → BTK**
+   İşlem Başlatma Talebi
 
-3. İzole Alan → Kurum:
-   uPub + CAPub (kayıt isteği)
+4. **BTK → Kurum**
+   İşlem Jetonu
+   
+   **BTK → CA**
+   İşlem Jetonu
 
-4. Kurum → BTK: İşlem Başlatma
-
-5. BTK → Kurum & CA: İşlem Jetonu
-
-6. Kurum → CA: 
+5. **Kurum → CA**
    uPub + Belge HASH'i
 
-7. CA → İzole Alan:
-   sPub (tek kullanımlık genel anahtar) 
+6. **CA → İzole Alan**
+   (sPriv + sPub + sCert)
+   uPub ile şifrelenmiş
+   CAPub ile imzalanmış
 
-8. İzole Alanda:
-   • sPub'u CAPub ile doğrula
-   • sPub'u uPriv ile imzala (onay)
-   • İmzalı sPub → CA'ya gönder
+7. **İzole Alan → Kurum**
+   signature + sPub + sCert + token_id
 
-9. CA → Kurum:
-   • sPriv ile İmzalanmış Belge HASH'i
-   • sPub (doğrulama için)
-   • Geçici Sertifika (sCert)
+8. **Kurum**
+   Doğrulama ve İşlem Tamamlama
 
 
 ### Kurum–BTK–CA Süreci
@@ -152,14 +151,14 @@ Bu modelde kullanıcının cihazında izole bir çalışma alanı (sandbox, dock
 Bu şemada, BTK’nın yalnızca **işlem jetonu üreten koordinatör** rolü olduğu net biçimde gösterilir.  
 BTK sürece müdahil olmaz, işlem detayına erişmez, kullanıcıya dair PII bilgisini görmez.  
 
-1. Kurum → BTK:
+1. **Kurum → BTK:**
    İşlem başlatma talebi
    • Kurum bilgisi
    • İşlem türü (örn: tapu, banka)
    • Kullanıcının seçtiği CA bilgisi
    • Zaman damgası
 
-2. BTK:
+2. **BTK:**
    • Benzersiz işlem jetonu (Session Token) üretir
    • Jetonu veritabanına kaydeder
    • Jeton bilgileri:
@@ -169,18 +168,18 @@ BTK sürece müdahil olmaz, işlem detayına erişmez, kullanıcıya dair PII bi
      - Oluşturma zamanı
      - Geçerlilik süresi (örn: 5 dakika)
 
-3. BTK → Kurum:
+3. **BTK → Kurum:**
    İşlem jetonu
 
-4. BTK → CA:
+4. **BTK → CA:**
    İşlem jetonu (aynı jeton, senkronizasyon için)
 
-5. Kurum → CA:
+5. **Kurum → CA:**
    • uPub
    • Belge HASH'i
    • İşlem jetonu (doğrulama için)
 
-6. CA:
+6. **CA:**
    • Kurum ve CA bilgilerinin eşleştiğini teyit eder
    • Tek kullanımlık; sPriv, sPub, sCert üretir
    • Kurumdan gelen belge HASH'ini sPriv ile imzalar
@@ -194,27 +193,27 @@ BTK sürece müdahil olmaz, işlem detayına erişmez, kullanıcıya dair PII bi
 </center>
 
 # Model 3 — Doğru Metin Akışı (Markdown)
-1. Kullanıcı → Kurum
+1. **Kullanıcı → Kurum**
    - İşlem talebi (klasik e-imza sahibi)
 
-2. Kurum → Kullanıcı  
+2. **Kurum → Kullanıcı**  
    - Belge + HASH + "Onaylıyor musunuz?"
 
-3. Kullanıcı → Kurum
+3. **Kullanıcı → Kurum**
    - uPriv ile imzalanmış HASH (onay imzası)
    - uPub (kimlik doğrulama için)
    ⚠️ Bu sadece "işlem onayı"dır, nihai belge imzası değil
 
-4. Kurum → BTK
+4. **Kurum → BTK**
    - İşlem başlatma talebi: {kurum_ID, işlem_tipi, CA_ID}
 
-5. BTK → Kurum & CA
+5. **BTK → Kurum & CA**
    - İşlem jetonu: {token_id, zaman_mührü, TTL, ca_ID, kurum_ID} + BTK_imza
 
-6. Kurum → CA
+6. **Kurum → CA**
    - {Belge HASH, onay_imzası, uPub, token_id}
 
-7. CA İşlemleri:  
+7. **CA İşlemleri:**  
    a) Token doğrulama (BTK imzası + TTL kontrolü)  
    b) uPub ile onay_imzasını doğrulama  
    c) uPub'dan kullanıcı kimliğini tespit edip veritabanından bilgilere erişme  
@@ -222,7 +221,7 @@ BTK sürece müdahil olmaz, işlem detayına erişmez, kullanıcıya dair PII bi
    e) Geçici sertifika üretme: sCert  
    f) Belge HASH'ini sPriv ile imzalama  
 
-8. CA → Kurum
+8. **CA → Kurum**
    - {sPriv ile imzalanmış HASH, sPub, sCert, token_id}
 
 ## CA doğrulamaları
