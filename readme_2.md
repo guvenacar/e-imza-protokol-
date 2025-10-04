@@ -165,7 +165,7 @@ BTK sürece müdahil olmaz, işlem detayına erişmez, kullanıcıya dair PII bi
 
 5. CA:
    • Token doğrulama
-   • Kullanıcı tercihleri kontrolü
+   • Kullanıcı tercihleri kontrolü (ek güvenlik katmanları)
    • sPriv/sPub/sCert üretir
    • (sPriv + sPub + sCert) paketini uPub ile şifreler
    • CAPub ile imzalar
