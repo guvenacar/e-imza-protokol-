@@ -580,7 +580,7 @@ Yazılım güncellemesi (Post-Quantum algoritmalara geçiş)
 Süre: Aylar
 Maliyet: Minimal
 
-python# Kuantum Geçişi - SUDSS'de Kolay
+Kuantum Geçişi - SUDSS'de Kolay
 
 # Eski (RSA)
 sPriv, sPub = RSA_KeyGen(2048)
