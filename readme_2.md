@@ -48,8 +48,9 @@ E-imza sahibi resmi bir işlem başlatmak istediğinde CA (Sertifika Hizmet Sağ
 
 **İşlem Anahtarları (sPriv/sPub):**
 - Her işlem için CA tarafından üretilir
-- **Tek kullanımlıktır** - işlem sonunda imha edilir
-- sPriv: Sadece CA'da bulunur, asla paylaşılmaz
+- Tek kullanımlıktır
+- Model 2B'de: CA'dan şifreli olarak izole alana gönderilir
+- Model 3'te: CA'da kalır, asla paylaşılmaz
 - sPub: Herkese açık, doğrulama için kullanılır
 
 **CA Anahtarları (CAPriv/CAPub):**
