@@ -300,7 +300,7 @@ Bu yapı, **noterlik sistemine** benzer: Kullanıcı imzalar, noter tasdik eder.
 
 * **onay_imzası**'nı **uPub** ile doğrula (kullanıcı gerçekten onayladı mı?)
 * **tasdik_imzası**'nı **sPub** ile doğrula (CA tasdik etti mi?)
-* **sCert**'i **CA kök/ara sertifikası**yla doğrula.
+* **sCert**'i **CA kök/ara** sertifikasıyla doğrula.
 * **BTK jetonu** için **imza/TTL/tek-kullanım** kontrolü.
 * İşlemi tamamla ve kaydet; **kullanıcıya sonuç bildir**.
 
@@ -329,11 +329,19 @@ Bu yapı, **noterlik sistemine** benzer: Kullanıcı imzalar, noter tasdik eder.
 
 ### Model 2B Kriptolojik Akışı:
 1. CA: sPriv/sPub üretir
-2. CA → Kullanıcı: (sPriv + sPub + sCert + token_id + TTL) şifreli paket
-3. Kullanıcı: uPriv ile paketi açar
-4. Kullanıcı: sPriv ile HASH'i imzalar
-5. Kullanıcı → Kurum: signature + sPub + sCert + token_id
-6. Kurum: sPub ile imza doğrular
+2. CA → Kullanıcı İzole Alanı:
+   enc{ sPriv, sPub, sCert, token_id, TTL, one_shot }
+   (uPub ile hibrit şifreli, CAPriv ile imzalı)
+
+3. İzole Alan: uPriv ile paketi açar (CAPub ile imzayı doğrular)
+4. İzole Alan: sPriv ile Belge HASH’ini imzalar → sSig; sPriv derhal imha
+5. İzole Alan → Kurum: { sSig, sPub, sCert, token_id }
+6. Kurum doğrular:
+   - Verify(sSig, sPub)
+   - Chain-validate(sCert)   # CA zinciri
+   - Match(sCert.sPub == sPub)
+   - VerifyToken(BTK_imza, token_id, TTL, one_shot)
+   - Check(sCert.validity)
 
 ### Model 3 Kriptolojik Akışı:
 1. Kullanıcı: uPriv ile HASH'i onaylar (onay imzası)
@@ -473,6 +481,9 @@ Klasik sistemde sadece: "Kullanıcı imzaladı"
 
 Bu çoklu log sistemi, hukuki uyuşmazlıklarda ve denetimlerde şeffaflık sağlar.
 
+# Bölüm 7 
+
+``` 
 
 ## 7. Kriptografik Çeviklik (Cryptographic Agility)
 
@@ -482,6 +493,7 @@ Sistemin en kritik özelliklerinden biri, **kriptografik algoritmaların kolayca
 
 Her iki sistemde de (klasik ve SUDSS) **fiziksel imza yoktur**, sadece **matematiksel işlemler** vardır:
 
+```python
 # Klasik Sistem
 signature = RSA_Sign(HASH, uPriv)
 
@@ -491,60 +503,82 @@ signature = RSA_Sign(HASH, sPriv)
 # Model 3
 onay = RSA_Sign(HASH, uPriv)
 tasdik = RSA_Sign(HASH, sPriv)
+```
+
 Her üçünde de aynı matematiksel işlem yapılır. Fark, hangi anahtarın kullanıldığıdır:
+- **Klasik:** Kullanıcının kalıcı anahtarı (3 yıl)
+- **Model 2B/3:** CA'nın ürettiği geçici anahtar (tek işlem)
 
-Klasik: Kullanıcının kalıcı anahtarı (3 yıl)
-Model 2B/3: CA'nın ürettiği geçici anahtar (tek işlem)
+**Önemli olan "kim imzalıyor" değil, "kim yetkilendirdi"dir.**
 
-Önemli olan "kim imzalıyor" değil, "kim yetkilendirdi"dir.
 Model 3'te kullanıcı işlemi onaylar, CA ise bu onayı tasdik eder - tıpkı noterlik sisteminde olduğu gibi. Her ikisi de bilgisayar kodu çalıştırarak matematiksel işlem yapar, fiziksel bir imza söz konusu değildir.
 
-Senaryo: Hash Fonksiyonu Zafiyeti (SHA-256 Kırılması)
-Klasik E-İmza Sistemi:
+---
+
+### Senaryo: Hash Fonksiyonu Zafiyeti (SHA-256 Kırılması)
+
+**Klasik E-İmza Sistemi:**
+
+```
 2025: 5 milyon USB token SHA-256 kullanıyor
 2030: SHA-256'da kritik zafiyet bulundu
-Gerekli Adımlar:
+```
 
-Tüm USB tokenları topla (5M cihaz)
-SHA-3 destekli yeni cihazlar üret
-Dağıtım ve kullanıcı eğitimi
-Geçiş dönemi (eski/yeni paralel)
+**Gerekli Adımlar:**
+1. Tüm USB tokenları topla (5M cihaz)
+2. SHA-3 destekli yeni cihazlar üret
+3. Dağıtım ve kullanıcı eğitimi
+4. Geçiş dönemi (eski/yeni paralel)
 
-Maliyet: 3-5 milyar TL
-Süre: 3-5 yıl
-Risk: Geçiş tamamlanana kadar sistem savunmasız
+**Maliyet:** 3-5 milyar TL  
+**Süre:** 3-5 yıl  
+**Risk:** Geçiş tamamlanana kadar sistem savunmasız
 
-Tek Kullanımlık E-İmza Sistemi:
+---
+
+**Tek Kullanımlık E-İmza Sistemi:**
+
+```
 2025: CA, SHA-256 kullanıyor
 2030: SHA-256'da zafiyet bulundu
-Gerekli Adımlar:
+```
 
-CA yazılımını güncelle:
-
-python# Eski
+**Gerekli Adımlar:**
+1. CA yazılımını güncelle:
+```python
+# Eski
 hash = SHA256(document)
 
 # Yeni
 hash = SHA3(document)
+```
 
-İzole alan uygulamasını güncelle (otomatik)
-Kurum sistemlerini güncelle (API uyumluluğu)
+2. İzole alan uygulamasını güncelle (otomatik)
+3. Kurum sistemlerini güncelle (API uyumluluğu)
 
-Maliyet: Birkaç milyon TL (yazılım geliştirme)
-Süre: 2-4 hafta
-Risk: Anında geçiş, güvenlik açığı yok
+**Maliyet:** Birkaç milyon TL (yazılım geliştirme)  
+**Süre:** 2-4 hafta  
+**Risk:** Anında geçiş, güvenlik açığı yok
 
-Gerçek Dünya Örneği: MD5 → SHA-1 → SHA-256
+---
+
+### Gerçek Dünya Örneği: MD5 → SHA-1 → SHA-256
+
 Geçmişte yaşandı:
+- 2004: MD5 kırıldı
+- 2017: SHA-1 kırıldı
 
-2004: MD5 kırıldı
-2017: SHA-1 kırıldı
+**Sertifika otoriteleri:** Yazılım güncellemesi yaptı, sorun çözüldü
 
-Sertifika otoriteleri: Yazılım güncellemesi yaptı, sorun çözüldü
-E-İmza tokenları: Donanım bazlı olduğu için güncellenemez, tüm cihazların değiştirilmesi gerekir
+**E-İmza tokenları:** Donanım bazlı olduğu için güncellenemez, tüm cihazların değiştirilmesi gerekir
 
-Algoritma Bağımsızlığı: Mimari vs Uygulama
-Bu sistem bir mimaridir, belirli bir algoritmaya bağımlı değildir:
+---
+
+### Algoritma Bağımsızlığı: Mimari vs Uygulama
+
+Bu sistem bir **mimaridir**, belirli bir algoritmaya bağımlı değildir:
+
+```
 Mimari Katmanları:
 ┌─────────────────────────────────┐
 │ Kullanıcı → İzole Alan → CA     │
@@ -559,28 +593,36 @@ Bu mimari üzerine herhangi bir
   • RSA / ECDSA
   • Post-Quantum (Dilithium, Kyber)
   • Gelecekte icat edilecek algoritmalar
-Benzetme:
+```
+
+**Benzetme:**
+
 Mimari = Bina tasarımı (kolonlar, yük dağılımı, esneklik)
 Algoritma = İnşaat malzemesi (beton, demir, cam)
+
 Bina tasarımı doğruysa, malzeme değişse de bina ayakta kalır.
-Klasik sistem: Mimari = Algoritma (sıkı bağlı)
-SUDSS: Mimari ≠ Algoritma (gevşek bağlı)
 
-Kuantum Tehdidi ve Avantajlar
+**Klasik sistem:** Mimari = Algoritma (sıkı bağlı)  
+**SUDSS:** Mimari ≠ Algoritma (gevşek bağlı)
+
+---
+
+### Kuantum Tehdidi ve Avantajlar
+
 Kuantum bilgisayarlar RSA'yı kırabilir (Shor Algoritması). Ama:
-Klasik Sistem:
 
-Milyonlarca donanım değişmeli
-Süre: Yıllar
-Maliyet: Milyarlarca TL
+**Klasik Sistem:**
+- Milyonlarca donanım değişmeli
+- Süre: Yıllar
+- Maliyet: Milyarlarca TL
 
-SUDSS:
+**SUDSS:**
+- Yazılım güncellemesi (Post-Quantum algoritmalara geçiş)
+- Süre: Aylar
+- Maliyet: Minimal
 
-Yazılım güncellemesi (Post-Quantum algoritmalara geçiş)
-Süre: Aylar
-Maliyet: Minimal
-
-Kuantum Geçişi - SUDSS'de Kolay
+```python
+# Kuantum Geçişi - SUDSS'de Kolay
 
 # Eski (RSA)
 sPriv, sPub = RSA_KeyGen(2048)
@@ -592,98 +634,118 @@ signature = Dilithium_Sign(HASH, sPriv)
 
 # Sadece CA ve izole alan yazılımı güncellenir
 # Kullanıcı hiçbir şey yapmaz
-Ek Avantajlar:
+```
 
-İzolasyon: Her işlem ayrı, toplu kırılma yok
-TTL: Zaman penceresi dar (5 dakika)
-Çoklu katman: Birden fazla şifreleme kırılmalı
+**Ek Avantajlar:**
+1. **İzolasyon:** Her işlem ayrı, toplu kırılma yok
+2. **TTL:** Zaman penceresi dar (5 dakika)
+3. **Çoklu katman:** Birden fazla şifreleme kırılmalı
 
+---
 
-8. Avantajlar
+## 8. Avantajlar
 
-Dağıtık Güven: Hiçbir taraf tek başına tam yetkiye sahip değildir.
-Çok Katmanlı Güvenlik: 20 kontrol noktası, derin savunma stratejisi.
-İşlem İzolasyonu: Her işlem bağımsızdır, anahtar sızıntısı zincirleme risk oluşturmaz.
-Ekonomik: Devlete ek maliyet doğurmadan 80 milyon vatandaş e-imza sahibi olabilir.
-Mahremiyet: CA kimlik bilgilerini saklamaz, veri ihlali riski minimumdur.
-Teknolojik Sürdürülebilirlik: Kriptografik algoritma güncellemeleri yazılım ile yapılabilir, donanım değişimi gereksizdir.
-Uluslararası Açılım: AB eIDAS 2.0 gibi standartlarla uyumlu hale getirilerek Türkiye'nin dijital kimlik alanında öncü ülke olmasını sağlar.
-Çoklu CA Desteği: Kullanıcı birden fazla CA ile çalışabilir, rekabet ve yedeklilik sağlanır.
-Hızlı Yanıt: Güvenlik zafiyetlerine yazılım güncellemesiyle hızla müdahale edilebilir.
+- **Dağıtık Güven:** Hiçbir taraf tek başına tam yetkiye sahip değildir.  
+- **Çok Katmanlı Güvenlik:** 20 kontrol noktası, derin savunma stratejisi.
+- **İşlem İzolasyonu:** Her işlem bağımsızdır, anahtar sızıntısı zincirleme risk oluşturmaz.  
+- **Ekonomik:** Devlete ek maliyet doğurmadan 80 milyon vatandaş e-imza sahibi olabilir.  
+- **Mahremiyet:** CA kimlik bilgilerini saklamaz, veri ihlali riski minimumdur.  
+- **Teknolojik Sürdürülebilirlik:** Kriptografik algoritma güncellemeleri yazılım ile yapılabilir, donanım değişimi gereksizdir.
+- **Uluslararası Açılım:** AB eIDAS 2.0 gibi standartlarla uyumlu hale getirilerek Türkiye'nin dijital kimlik alanında öncü ülke olmasını sağlar.  
+- **Çoklu CA Desteği:** Kullanıcı birden fazla CA ile çalışabilir, rekabet ve yedeklilik sağlanır.
+- **Hızlı Yanıt:** Güvenlik zafiyetlerine yazılım güncellemesiyle hızla müdahale edilebilir.
 
+---
 
-9. Model Karşılaştırması: Kullanıcı Perspektifi
-Model 2B: Yeni Nesil Kullanıcılar
-Hedef Kitle:
+## 9. Model Karşılaştırması: Kullanıcı Perspektifi
 
-Yeni e-imza kullanıcıları
-Mobil-first kullanıcılar
-Fiziksel cihaz istemeyenler
-Tech-savvy kesim
+### Model 2B: Yeni Nesil Kullanıcılar
 
-Kullanım Senaryosu:
+**Hedef Kitle:**
+- Yeni e-imza kullanıcıları
+- Mobil-first kullanıcılar
+- Fiziksel cihaz istemeyenler
+- Tech-savvy kesim
+
+**Kullanım Senaryosu:**
+```
 Zeynep (28, freelancer):
 "Telefonuma app indirdim, 5 dakikada e-imza sahibi oldum.
 Tapu işlemimi bankadan hallettim, cihaz taşımaya gerek yok."
-Avantajlar:
+```
 
-Sıfır donanım maliyeti
-Anında başlangıç
-Her yerden erişim
-Modern güvenlik (TEE/Secure Enclave)
+**Avantajlar:**
+- Sıfır donanım maliyeti
+- Anında başlangıç
+- Her yerden erişim
+- Modern güvenlik (TEE/Secure Enclave)
 
+---
 
-Model 3: Mevcut E-İmza Sahipleri
-Hedef Kitle:
+### Model 3: Mevcut E-İmza Sahipleri
 
-Mevcut USB token sahipleri
-Kurumsal kullanıcılar
-Değişime dirençli kesim
-Token'ı hala geçerli olanlar
+**Hedef Kitle:**
+- Mevcut USB token sahipleri
+- Kurumsal kullanıcılar
+- Değişime dirençli kesim
+- Token'ı hala geçerli olanlar
 
-Kullanım Senaryosu:
+**Kullanım Senaryosu:**
+```
 Ahmet (45, iş adamı):
 "TurkTrust token'ım var. Yeni sisteme geçtim,
 aynı token'ı kullanıyorum ama artık her işlem
 için farklı anahtar üretiliyor. Çok daha güvenli."
-Avantajlar:
+```
 
-Mevcut yatırım korunur
-Token değişimi gerekmez
-Alışık olduğu süreç
-Tek kullanımlık güvenlik kazanır
-İki aşamalı imzalama (onay + tasdik)
+**Avantajlar:**
+- Mevcut yatırım korunur
+- Token değişimi gerekmez
+- Alışık olduğu süreç
+- Tek kullanımlık güvenlik kazanır
+- İki aşamalı imzalama (onay + tasdik)
 
+---
 
-Geçiş Stratejisi
+### Geçiş Stratejisi
+
+```
 2025-2027: Model 3 ile mevcut kullanıcılar sisteme geçer
 2027-2030: USB tokenlar yenilenmez, Model 2B'ye geçiş başlar
 2030+:     Model 2B dominant olur, Model 3 opsiyonel kalır
+```
+
 Her iki model de paralel çalışır, kullanıcı özgürce seçer.
 
-10. Sonuç
-Tek Kullanımlık E-İmza Sistemi (SUDSS), klasik e-imza modelinden farklı olarak:
+---
 
-Kullanıcı yükünü ortadan kaldırır
-İşlemleri izole eder
-Güvenliği katmanlar halinde artırır
-Teknolojik değişimlere hızla adapte olabilir
-Türkiye'yi dijital imza teknolojisinde dünyada lider konuma taşıyabilecek bir altyapı sunar
+## 10. Sonuç
 
-Bu sistem sadece teknik bir yenilik değil; dijital toplum yaratma vizyonudur.
-Temel Felsefe
+**Tek Kullanımlık E-İmza Sistemi (SUDSS)**, klasik e-imza modelinden farklı olarak:  
+- Kullanıcı yükünü ortadan kaldırır  
+- İşlemleri izole eder  
+- Güvenliği katmanlar halinde artırır
+- Teknolojik değişimlere hızla adapte olabilir
+- Türkiye'yi dijital imza teknolojisinde dünyada lider konuma taşıyabilecek bir altyapı sunar
 
-"Mimari doğruysa, malzeme değişebilir."
+**Bu sistem sadece teknik bir yenilik değil; dijital toplum yaratma vizyonudur.**
+
+### Temel Felsefe
+
+> **"Mimari doğruysa, malzeme değişebilir."**
 
 Sistemin gücü, belirli bir şifreleme algoritmasında değil, dağıtık ve çok katmanlı mimarisindedir. Hash fonksiyonu değişsin, anahtar uzunluğu artsın, kuantum dirençli algoritmalar gelsin - mimari ayakta kalır.
+
 Klasik sistemde her teknolojik değişim milyarlarca TL ve yıllar süren donanım değişimi gerektirir. SUDSS'de ise sadece yazılım güncellenir.
+
 Bu, sistemin sadece bugün için değil, önümüzdeki 50 yıl için tasarlandığı anlamına gelir.
-Vizyoner Yaklaşım
+
+### Vizyoner Yaklaşım
+
 Sistem üç temel prensip üzerine kuruludur:
 
-İzolasyon: Her işlem bağımsız, bir ihlal tüm sistemi etkilemez
-Dağıtım: Tek nokta başarısızlığı yok, çoklu aktör güvencesi
-Esneklik: Teknolojik evrime hızla adapte olabilme
+1. **İzolasyon:** Her işlem bağımsız, bir ihlal tüm sistemi etkilemez
+2. **Dağıtım:** Tek nokta başarısızlığı yok, çoklu aktör güvencesi
+3. **Esneklik:** Teknolojik evrime hızla adapte olabilme
 
-Bu prensipler, sistemi sadece güvenli değil, aynı zamanda sürdürülebilir yapıyor.
-
+Bu prensipler, sistemi sadece güvenli değil, aynı zamanda **sürdürülebilir** yapıyor.
