@@ -170,32 +170,32 @@ Bu modelde kullanıcının cihazında izole bir çalışma alanı (sandbox, dock
 Bu şemada, BTK'nın yalnızca **işlem jetonu üreten koordinatör** rolü olduğu net biçimde gösterilir.  
 BTK sürece müdahil olmaz, işlem detayına erişmez, kullanıcıya dair PII bilgisini görmez.  
 
-1. Kurum → BTK:
+1. **Kurum → BTK:**
    İşlem başlatma talebi (kurum, işlem türü, CA, timestamp)
 
-2. BTK:
+2. **BTK:**
    İşlem jetonu üretir ve veritabanına kaydeder
 
-3. BTK → Kurum & CA:
+3. **BTK → Kurum & CA:**
    İşlem jetonu
 
-4. Kurum → CA:
+4. **Kurum → CA:**
    uPub + Belge HASH'i + token
 
-5. CA:
+5. **CA:**
    • Token doğrulama
    • Kullanıcı tercihleri kontrolü (ek güvenlik katmanları)
    • sPriv/sPub/sCert üretir
    • (sPriv + sPub + sCert) paketini uPub ile şifreler
    • CAPub ile imzalar
 
-6. CA → İzole Alan:
+6. **CA → İzole Alan:**
    Şifreli ve imzalı anahtar paketi
 
-7. İzole Alan → Kurum:
+7. **İzole Alan → Kurum:**
    signature + sPub + sCert + token_id
 
-8. Kurum:
+8. **Kurum:**
    Token, sertifika ve imza doğrulama
    İşlem tamamlama
 ---
