@@ -1,239 +1,333 @@
-# E-İmza Sistemi Modelleri
+# Tek Kullanımlık E-İmza Sistemi (SUDSS)
 
-Bu proje, Türkiye'de elektronik imza sistemleri için geliştirilmiş farklı mimarileri ve süreçleri içermektedir. Projede yer alan modeller, güvenli elektronik işlemlerin gerçekleştirilmesi için çeşitli yaklaşımlar sunmaktadır.
+## 1. Giriş
 
-## 📋 İçindekiler
+**Tek Kullanımlık E-İmza Sistemi (SUDSS)**, e-imza teknolojisinde devrim niteliğinde yeni bir protokol önermektedir. Bu sistem, Türkiye'yi dijital imza alanında takip eden değil **takip edilen** ülke konumuna taşıyabilecek, dünyada henüz hiçbir ülkede uygulanmayan benzersiz bir yaklaşımdır.
 
-- [Genel Bakış](#genel-bakış)
-- [Model 1: Tüm Resmi İşlemlerde E-İmza Dönemi](#model-1-tüm-resmi-i̇şlemlerde-e-i̇mza-dönemi)
-  - [Model 1A: İlk Kayıt - Kişiye Özel Genel Anahtar Temini](#model-1a-i̇lk-kayıt---kişiye-özel-genel-anahtar-temini-upub)
-  - [Model 1B: Çevrim İçi Resmi Evrak İmzalama Süreci](#model-1b-çevrim-i̇çi-resmi-evrak-i̇mzalama-süreci)
-- [Model 2: İzole Çalışma Alanı Protokolü](#model-2-i̇zole-çalışma-alanı-protokolü)
-- [Model 3: Hibrit (Geçiş) Modeli](#model-3-hibrit-geçiş-modeli)
-- [Model 4: Çevrim İçi E-İmza Kayıt Süreci](#model-4-çevrim-i̇çi-e-i̇mza-kayıt-süreci)
-- [Teknik Gereksinimler](#teknik-gereksinimler)
+### 1.1 Mevcut Sistemin Sorunları
 
-## 🎯 Genel Bakış
+Bugün Türkiye'de e-imza kullanım oranı %5'in altındadır. Klasik e-imza protokolünde CA firmalarından alınan dijital imzalar, 3 yıl geçerli olmak üzere kullanıcıya teslim edilen özel cihazlarda (akıllı kart, USB token) barındırılmak zorundadır. Bu durum ciddi sorunlar yaratmaktadır:
 
-Bu e-imza sistemi modelleri, Türkiye'nin elektronik imza altyapısında kullanılan çeşitli senaryoları kapsamaktadır. Her model, farklı kullanıcı durumları ve güvenlik gereksinimlerini karşılamak üzere tasarlanmıştır.
+- **Güvenlik Riski**: E-imza cihazlarının çalınması veya kaybolması halinde, dijital imza sahibinin önceki ve sonraki **tüm resmi işlemleri tehlikeye girebilmektedir**. Tek bir güvenlik ihlali, yıllarca süren işlem geçmişini ve geleceğini riske atabilir.
+- **Sürekli Taşıma Zorluluğu**: Dijital imza sahipleri cihazlarını yanlarından ayıramaz. Yanında taşımasa işlem yapamaz, yanında taşısa güvenlik riski doğar.  
+- **Ekonomik Engeller**: Donanım maliyetleri (500–1500 TL) ve karmaşık süreçler nedeniyle vatandaşlar e-imza kullanmaktan uzak durmaktadır.
 
-### Temel Bileşenler
+### 1.2 Paradigma Değişimi: Tek Kullanımlık Anahtarlar
 
-- **USER**: Son kullanıcı/Vatandaş
-- **Institution/E-Government**: Kurumsal sistemler (e-Devlet, Banka, Vergi Dairesi vb.)
-- **Network Transaction Authority (NTA)**: Ağ işlem otoritesi
-- **Certification Authority (CA)**: Sertifika otoritesi
-- **Isolated Workspace**: İzole çalışma ortamı
+Tek Kullanımlık E-İmza Sistemi'nin kırılma noktası şu yaklaşımdır:  
+**"Her işlem için yeni, tek kullanımlık anahtarlar üretilir."**
 
----
+Bu devrimsel paradigma ile:  
+- Kullanıcı fiziksel cihaz taşımak zorunda değildir  
+- Her işlem için yeni sPriv/sPub/sCert üretilir  
+- Bir işlemin güvenlik ihlali diğer işlemleri etkilemez  
+- Cep telefonu ile saniyeler içinde güvenli imzalama mümkündür  
 
-## 🏛️ Model 1: Tüm Resmi İşlemlerde E-İmza Dönemi
-### (Tüm Vatandaşların E-İmza Sahibi Olması)
+**Sistem nasıl çalışır:**
 
-Bu model, tüm vatandaşların elektronik imza sahibi olduğu ve tüm resmi işlemlerin e-imza ile gerçekleştirildiği dönemi kapsamaktadır. Model 1, iki alt süreçten oluşmaktadır.
+Sistem iki farklı modelle çalışabilir:
 
----
+**Model 2B (İzole Alan):** Kullanıcı cihazında güvenli bir izole alan oluşturulur. CA her işlem için tek kullanımlık anahtar çifti (sPriv/sPub) üretir ve şifreli olarak kullanıcıya gönderir. Kullanıcı kendi cihazında HASH'i imzalar ve kuruma iletir.
 
-### 🔐 Model 1A: İlk Kayıt - Kişiye Özel Genel Anahtar Temini (uPub)
+**Model 3 (Hibrit - Geçiş):** Mevcut e-imza sahipleri için geçiş modeli. Kullanıcı sadece işleme onay verir. CA bu onayı doğrular, sPriv/sPub üretir ve belgeyi imzalar.
 
-Bu model, henüz uPub (kullanıcı public key) sahibi olmayan vatandaşlar için e-Devlet sisteminde kalıcı anahtar saklama sürecidir.
-
-#### Süreç Akışı
-
-1. **Vatandaş İsteği**: Vatandaş herhangi bir kuruma (Banka, Hastane, Vergi Dairesi vb.) başvuru yapar
-2. **uPub Talebi**: Kurum, e-Devlet'ten vatandaş için uPub talebinde bulunur
-3. **İşlem Talebi (Tx Request)**: e-Devlet, NTA'dan süreci başlatmasını ister
-4. **Oturum Tokeni**: NTA tüm taraflara session token dağıtımı yapar
-5. **Kullanıcı Kimlik Doğrulama + uPub Talebi**: e-Devlet vatandaş kimliğini doğrular ve CA'dan uPub talebi yapar
-6. **Sertifika İşlemi**: CA tarafından kalıcı uPub üretimi gerçekleştirilir
-7. **uPub Yanıtı**: CA'dan e-Devlet'e uPub yanıtı gönderilir
-8. **uPub Saklama**: e-Devlet sistemi uPub'ı kalıcı olarak saklar ve kuruma bildirir
-
-**Not**: Bu modelde vatandaşa fiziksel bir uPub teslim edilmez, e-Devlet sistemi uPub'ı güvenli bir şekilde muhafaza eder.
-
-#### Diyagram
-![Model 1A Diyagramı](images/model_1A_diyagram_TR.png)
-
-#### Belgeler
-- [Model 1A ile ilgili akademik makale için tıklayın](docs/model_1a_academic_document.md)
-- [Model 1A ile ilgili white paper için tıklayın](docs/model_1a_white_paper.md)
+Her iki modelde de tek kullanımlık anahtarlar sayesinde bir işlemin güvenlik ihlali diğer işlemleri etkilemez.
 
 ---
 
-### 🔑 Model 1B: Çevrim İçi Resmi Evrak İmzalama Süreci
+## 2. Mimarinin Temel İlkeleri
 
-Bu model, zaten uPub'a sahip vatandaşların rutin e-imza işlemlerini gerçekleştirdiği süreci ele alır.
+**Model 2B (İzole Alan):**
+- Kullanıcı kendi cihazında güvenli izole alanda imzalar
+- CA her işlem için sPriv/sPub/sCert üretir ve şifreli gönderir
+- sPriv kullanıcı cihazında sadece o işlem için kullanılır
+- İşlem sonunda sPriv işlevsiz hale gelir
 
-#### Süreç Akışı
+**Model 3 (Hibrit - Geçiş):**
+- Kullanıcı sadece işleme onay verir (uPriv ile)
+- CA onayı doğrular ve sPriv/sPub üretir
+- CA, HASH'i sPriv ile imzalar
+- sPriv HSM'de derhal imha edilir
 
-1. **Vatandaş İsteği**: Vatandaş kuruma işlem talebinde bulunur
-2. **İşlem Talebi**: Kurum NTA'ya işlem talebi (Tx Request) gönderir
-3. **Oturum Tokeni**: NTA, Kurum ve CA'ya session token dağıtır
-4. **uPub İletimi**: Kurum CA'ya uPub gönderir
-5. **İmzalı Belge Talebi**: Kurum CA'dan imzalı belge talebi yapar (Code Request)
-6. **Onay Kodu Talebi**: CA doğrudan vatandaşa "X kurumunun sağladığı A belgesini imzalamak için aşağıdaki kodu girin" şeklinde onay kodu talep eder
-7. **Kod Girişi**: Vatandaş CA'ya onay kodunu girer ("Enter Code")
-8. **İmzalı Belge Teslimi**: CA kuruma imzalı belge + geçici sertifika gönderir
-9. **İşlem Özeti**: CA vatandaşa işlem özeti + onay kodu (OTP) gönderir
-
-#### CA İşlemleri
-CA'da gerçekleşen işlem: "Generate Ephemeral Key → Sign → Destroy" (Geçici anahtar üret → İmzala → İmha et)
-
-#### Diyagram
-![Model 1B Diyagramı](images/model_1B_diyagram_TR.png)
-
-#### Belgeler
-- [Model 1B ile ilgili akademik makale için tıklayın](docs/model_1b_academic_paper.md)
-- [Model 1B ile ilgili white paper için tıklayın](docs/model_1b_white_paper.md)
+**Her iki modelde ortak:**
+- **Tek kullanımlık:** Her sPriv/sPub sadece bir işlem için geçerli
+- **İzolasyon:** Bir işlemin ihlali diğerlerini etkilemez
+- **sCert:** CA'nın bu işlemi onayladığının kanıtı
 
 ---
 
-## 🛡️ Model 2: İzole Çalışma Alanı Protokolü (5070 sayılı Elektronik İmza Kanunu'na uygun)
+### Anahtar Terminolojisi
 
-Docker benzeri mimari ile güvenli işlem ortamı sağlayan gelişmiş güvenlik modelidir. 
+**Kullanıcı Anahtarları (uPriv/uPub):**
+- Kullanıcıya özel, kalıcı anahtar çifti
+- uPriv: İzole alanda güvenle saklanır
+- uPub: CA ve e-Devlet'te kayıtlıdır
+- Ömrü: 3 yıl (yenilenebilir)
 
-### Özellikler
+**İşlem Anahtarları (sPriv/sPub):**
+- Her işlem için CA tarafından üretilir
+- Tek kullanımlıktır
+- Model 2B'de: CA'dan şifreli olarak izole alana gönderilir
+- Model 3'te: CA'da kalır, asla paylaşılmaz
+- sPub: Herkese açık, doğrulama için kullanılır
 
-- Docker benzeri konteyner mimarisi
-- İki yönlü kimlik doğrulama (Two way auth)
-- İzole çalışma ortamı (Isolated Workspace)
-- Gelişmiş anahtar yönetimi (Private Key, CA Public Key, User Public Key)
-- Geçici nPub (ephemeral public key) kullanımı
+**CA Anahtarları (CAPriv/CAPub):**
+- CA'nın ana anahtar çifti
+- CAPriv: HSM'de saklanır
+- CAPub: Kullanıcıların izole alanında sabit olarak bulunur
+- Her kullanıcı tek bir CA ile çalışır
 
-### Süreç Akışı
 
-1. **İki Yönlü Kimlik Doğrulama**: Kullanıcı ile kurum arasında karşılıklı doğrulama talebi
-2. **Anahtar Talebi**: Kurum CA'dan uPub + CAPub talebi yapar
-3. **İzole Ortam Kurulumu**: Kurum kullanıcının izole çalışma alanına uPub + CAPub sağlar
-4. **İşlem Talebi**: Kurum NTA'ya işlem talebi (Tx Request) gönderir
-5. **Oturum Tokeni**: NTA, Kurum ve CA'ya session token dağıtır
-6. **Yetkili Kopya**: CA kuruma yetkili uPub + CAPub kopyasını gönderir
-7. **Geçici nPub Üretimi**: CA'nın geçici anahtar servisi her talep için ephemeral nPub üretir
-8. **İmzalı Geçici nPub Teslimatı**: İmzalı ephemeral nPub kullanıcının izole çalışma alanına teslim edilir
-9. **Geçici Sertifika**: CA kuruma geçici sertifikayı gönderir
+## 3. Modeller
 
-### Diyagram
-![Model 2 Diyagramı](images/izole_calisma_alani_TR.png)
+**Tek Kullanımlık E-İmza Sistemi, iki ana model üzerine kurgulanmıştır:**
 
-### Belgeler
-- [Model 2 ile ilgili akademik makale için tıklayın](docs/model_2_academic_document.md)
-- [Model 2 ile ilgili white paper için tıklayın](docs/model_2_white_paper.md)
+- **Model 2 – İzole Alanlı E-İmza Protokolü (IAEP)**  
+- **Model 3 – Hibrit (Geçiş) Model**
 
----
-
-## 🔄 Model 3: Hibrit (Geçiş) Modeli
-
-Bu model, mevcut geleneksel sistemlerden yeni e-imza sistemine geçiş sürecinde kullanılan hibrit yaklaşımdır.
-
-### Özellikler
-
-- Dijital imza entegrasyonu (USER + Digital Sign)
-- Mevcut e-imza altyapısı ile uyumluluk
-- Kurumsal e-imza süreçleri
-- NTA ve CA arasında koordinasyon
-- Geçiş dönemi esnekliği
-
-### Süreç Akışı
-
-1. **Kullanıcı Talebi**: Kullanıcı kuruma işlem talebinde bulunur
-2. **Kurumsal E-İmza Talebi**: Kurum kullanıcıdan dijital imza ile kurumsal e-imza talebi yapar
-3. **İmzalı Belge**: Kullanıcı kuruma imzalı belge gönderir
-4. **İşlem Talebi**: Kurum NTA'ya işlem talebi gönderir
-5. **Oturum Tokeni**: NTA, Kurum ve CA'ya session token dağıtır
-6. **CA İletişimi**: Kurum CA'ya NTA session token + uPub gönderir
-7. **Geçici Sertifika**: CA kuruma geçici sertifika gönderir
-8. **Başarı Mesajı**: Kurum kullanıcıya başarı mesajı gönderir
-
-### Diyagram
-![Model 3 Diyagramı](images/model_hibrit_diyagram_TR.png)
-
-### Belgeler
-- [Model 3 ile ilgili akademik makale için tıklayın](docs/model_3_academic_document.md)
-- [Model 3 ile ilgili white paper için tıklayın](docs/model_3_white_paper.md)
+> **Not:** İlk tasarıda yer alan Model 1 (merkeziyetçi vatandaş modeli) güvenlik ve suistimal riskleri nedeniyle kaldırılmıştır. Bundan sonraki geliştirmeler Model 2 ve Model 3 üzerine yoğunlaşacaktır. Ancak ek güvenlik protokolleri ile Model 1 de değerlendirilebilir.
 
 ---
 
-## 📝 Model 4: Çevrim İçi E-İmza Kayıt Süreci
+### Model 2 – İzole Alanlı E-İmza Protokolü (IAEP)
 
-Vatandaşların tamamen çevrim içi ortamda e-imza sertifikası almalarını sağlayan gelişmiş kayıt sürecidir.
+#### Model 2A – İlk Kayıt Süreci
+<center>
+<img src="images/online_eimza_kayit_diyagram_TR.png" alt="İlk Kayıt Süreci" width="600">
+</center>
 
-### Özellikler
+## Model 2A – İlk Kayıt Süreci
 
-- İzole çalışma ortamı entegrasyonu
-- Doğrudan CA teslim sistemi
-- Çoklu güvenlik protokolleri
-- E-Government anahtarı ile veri şifreleme
-- Nitelikli kullanıcı sertifikası (Qualified user certificate)
+1. **Kullanıcı → e-Devlet:** Dijital imza başvurusu
 
-### Süreç Akışı
+2. **e-Devlet:** Kimlik doğrulama
 
-1. **Dijital İmza Talebi**: Kullanıcı e-Devlet'ten dijital imza talebi yapar
-2. **İşlem Talebi**: e-Devlet NTA'ya işlem talebi (Request Tx) gönderir
-3. **Çoklu Oturum Dağıtımı**: NTA, e-Devlet, CA ve kullanıcıya session token dağıtır
-4. **Veri Şifreleme ve İmzalama**: e-Devlet kullanıcı verisini şifreler ve e-Devlet anahtarı ile imzalayarak CA'ya gönderir
-5. **Doğrudan Sertifika Teslimi**: CA nitelikli kullanıcı sertifikasını doğrudan kullanıcının izole çalışma alanına teslim eder
+3. **e-Devlet → Kullanıcı:** İzole alan uygulamasını indir
 
-### Anahtar Yönetimi
-İzole çalışma alanında:
-- Private Key (uPri)
-- CA Public Key (CAPub)  
-- User Public Key (uPub)
+4. **Kullanıcı Cihazı:** İzole alan oluşturulur, uPriv/uPub üretilir
 
-### Diyagram
-![Model 4 Diyagramı](images/online_eimza_kayit_diyagram_TR.png)
+5. **Kullanıcı:** CA seçimi yapar
 
-### Belgeler
-- [Model 4 ile ilgili akademik makale için tıklayın](docs/model_4_academic_document.md)
-- [Model 4 ile ilgili white paper için tıklayın](docs/model_4_white_paper.md)
+6. **e-Devlet → BTK:** Kayıt işlemi başlatma
+
+7. **BTK → e-Devlet, CA, Kullanıcı:** İşlem jetonu
+
+8. **e-Devlet → CA (HTTPS/TLS):**
+   - Kullanıcı kimlik bilgileri
+   - uPub
+   - e-Devlet dijital imzası
+
+9. **CA:**
+   - Kullanıcıyı kaydeder (uPub ile)
+   - uCert oluşturur
+
+10. **CA → Kullanıcı İzole Alanı:** uCert, CAPub teslim edilir
+
+11. **Kayıt tamamlandı**
+
+#### Model 2B – İşlem Aşaması
+<center>
+<img src="images/izole_calisma_alani_TR.png" alt="İzole Çalışma Alanı" width="600">
+</center>
+
+Bu modelde kullanıcının cihazında izole bir çalışma alanı (sandbox, docker benzeri) oluşturulur.  
+
+1. **Kullanıcı → İzole Alan**
+   İşlem Talebi
+
+2. **Kurum → İzole Alan**
+   uPub + Belge + Belge HASH'i
+
+3. **Kurum → BTK**
+   İşlem Başlatma Talebi
+
+4. **BTK → Kurum**
+   İşlem Jetonu
+   
+   **BTK → CA**
+   İşlem Jetonu
+
+5. **Kurum → CA**
+   uPub + Belge HASH'i
+
+6. **CA → İzole Alan**
+   (sPriv + sPub + sCert)
+   uPub ile şifrelenmiş
+   CAPub ile imzalanmış
+
+7. **İzole Alan → Kurum**
+   signature + sPub + sCert + token_id
+
+8. **Kurum**
+   Doğrulama ve İşlem Tamamlama
+
+
+### Kurum–BTK–CA Süreci
+<center>
+<img src="images/Kurum_BTK_CA_sureci_TR.png" alt="Model 2 Diyagramı" width="600">
+</center>
+
+Bu şemada, BTK'nın yalnızca **işlem jetonu üreten koordinatör** rolü olduğu net biçimde gösterilir.  
+BTK sürece müdahil olmaz, işlem detayına erişmez, kullanıcıya dair PII bilgisini görmez.  
+
+1. Kurum → BTK:
+   İşlem başlatma talebi (kurum, işlem türü, CA, timestamp)
+
+2. BTK:
+   İşlem jetonu üretir ve veritabanına kaydeder
+
+3. BTK → Kurum & CA:
+   İşlem jetonu
+
+4. Kurum → CA:
+   uPub + Belge HASH'i + token
+
+5. CA:
+   • Token doğrulama
+   • Kullanıcı tercihleri kontrolü (ek güvenlik katmanları)
+   • sPriv/sPub/sCert üretir
+   • (sPriv + sPub + sCert) paketini uPub ile şifreler
+   • CAPub ile imzalar
+
+6. CA → İzole Alan:
+   Şifreli ve imzalı anahtar paketi
+
+7. İzole Alan → Kurum:
+   signature + sPub + sCert + token_id
+
+8. Kurum:
+   Token, sertifika ve imza doğrulama
+   İşlem tamamlama
+---
+
+### Model 3 – Hibrit (Geçiş) Model
+<center>
+<img src="images/model_hibrit_diyagram_TR.png" alt="Model Hibrit Diyagramı" width="600">
+</center>
+
+# Model 3 — Doğru Metin Akışı (Markdown)
+1. **Kullanıcı → Kurum**
+   - İşlem talebi (klasik e-imza sahibi)
+
+2. **Kurum → Kullanıcı**  
+   - Belge + HASH + "Onaylıyor musunuz?"
+
+3. **Kullanıcı → Kurum**
+   - uPriv ile imzalanmış HASH (onay imzası)
+   - uPub (kimlik doğrulama için)
+   ⚠️ Bu sadece "işlem onayı"dır, nihai belge imzası değil
+
+4. **Kurum → BTK**
+   - İşlem başlatma talebi: {kurum_ID, işlem_tipi, CA_ID}
+
+5. **BTK → Kurum & CA**
+   - İşlem jetonu: {token_id, zaman_mührü, TTL, ca_ID, kurum_ID} + BTK_imza
+
+6. **Kurum → CA**
+   - {Belge HASH, onay_imzası, uPub, token_id}
+
+7. **CA İşlemleri:**  
+   a) Token doğrulama (BTK imzası + TTL kontrolü)  
+   b) uPub ile onay_imzasını doğrulama  
+   c) uPub'dan kullanıcı kimliğini tespit edip veritabanından bilgilere erişme  
+   d) Geçici anahtar çifti üretme: (sPriv, sPub)  
+   e) Geçici sertifika üretme: sCert  
+   f) Belge HASH'ini sPriv ile imzalama  
+
+8. **CA → Kurum**
+   - {sPriv ile imzalanmış HASH, sPub, sCert, token_id}
+
+## CA doğrulamaları
+
+* BTK jetonunun **imzası**, **TTL** ve **tek-kullanım** kontrolü.
+* **uPub** ile **onay imzasını** doğrulama.
+* **uPub**'ı kendi kayıtlarında (**CRL/OCSP/kendi dizini**) eşleştirip durumunu kontrol etme.
+
+  * *(CA, kullanıcı sertifikasını Kurumdan almaz; kendisi tespit eder.)*
+* Bu kontrollerle **kullanıcı onayını** teyit eder.
+
+## CA üretim & imza
+
+* **Tek kullanımlık sPriv/sPub** üretir.
+* **Belge HASH'ini sPriv** ile imzalar → **sSig**.
+* **sPriv** HSM içinde **derhal imha edilir**.
+* **sCert** (geçici sertifika) düzenlenir; **token_id/TTL/tek-kullanım** bilgisi bağlanır.
+
+**CA → Kurum**
+
+* `{sSig, sPub, sCert, token_id}` (TLS).
+
+## Kurum doğrulamaları
+
+* **sSig**'ı **sPub** ile; **sCert**'i **CA kök/ara sertifikası**yla doğrula.
+* **BTK jetonu** için **imza/TTL/tek-kullanım** kontrolü.
+* İşlemi tamamla ve kaydet; **kullanıcıya sonuç bildir**.
+
+
+
+Bu model, mevcut e-imza sahiplerinin sisteme entegrasyonu için geliştirilmiştir.  
+- Kullanıcı mevcut e-imzası ile yalnızca **onay verir**, belgeyi doğrudan imzalamaz.  
+- CA bu onayı doğrular, sPriv/sPub üretir ve belgeyi sPriv ile imzalar.  
+- Böylece kullanıcı anahtarının sızması durumunda bile yalnızca ilgili işlem tehlikeye girer.  
 
 ---
 
-## ⚙️ Teknik Gereksinimler
+## 4. Güvenlik ve Gizlilik Modeli
 
-### Güvenlik Standartları
-
-- **PKI Altyapısı**: Public Key Infrastructure desteği
-- **SSL/TLS**: Güvenli iletişim protokolleri
-- **Oturum Yönetimi**: Güvenli token tabanlı oturum yönetimi
-- **Şifreleme**: AES-256, RSA-2048 minimum standartları
-- **İki Yönlü Kimlik Doğrulama**: Mutual authentication desteği
-
-### Sistem Gereksinimleri
-
-- **İzole Ortam**: Docker veya benzeri konteyner teknolojisi
-- **Veritabanı**: Güvenli sertifika ve anahtar deposu
-- **Ağ Güvenliği**: Firewall ve intrusion detection systems
-- **Audit Trail**: Tüm işlemlerin kayıt altına alınması
-- **Session Management**: Çoklu oturum yönetimi kapasitesi
-
-### Uyumluluk
-
-- **ETSI Standartları**: Avrupa elektronik imza standartları
-- **Türk Standartları**: TSE ve BTK düzenlemelerine uyumluluk
-- **Uluslararası Standartlar**: ISO/IEC 27001, Common Criteria
-- **eIDAS Uyumluluğu**: Avrupa elektronik kimlik düzenlemelerine uyum
-
-### Model Karşılaştırması
-
-| Model | Kullanım Amacı | Güvenlik Seviyesi | Karmaşıklık | uPub Yönetimi |
-|-------|----------------|-------------------|--------------|---------------|
-| **Model 1A** | İlk uPub kaydı | Orta | Düşük | e-Devlet'te kalıcı saklama |
-| **Model 1B** | Rutin e-imza işlemleri | Orta | Düşük | Sistemde mevcut uPub kullanımı |
-| **Model 2** | Yüksek güvenlik gerektiren işlemler | Çok Yüksek | Yüksek | İzole ortamda çoklu anahtar yönetimi |
-| **Model 3** | Geçiş dönemi işlemleri | Orta | Orta | Hibrit anahtar yönetimi |
-| **Model 4** | Online sertifika kayıt | Yüksek | Orta | İzole ortam + doğrudan CA teslim |
-
+- **CA, kullanıcıların açık kimlik bilgilerini saklamaz.**  
+- Kimlik doğrulama yalnızca e-Devlet veya yetkili devlet sistemi üzerinden yapılır.  
+- CA sadece **uPub + işlem kanıtı** tutar. Denetim gerektiğinde e-Devlet API'si üzerinden doğrulama yapılır.  
+- Böylece:  
+  - **PII sızıntısı riski minimumdur**  
+  - CA bir saldırı hedefi olmaktan çıkar  
+  - Kimlik yönetimi devlette kalır, CA teknik bir imzalama servisi olarak çalışır  
 
 ---
 
-## 🤝 Katkıda Bulunma
+## 5. Kriptolojik Zincir
 
-Projeye katkıda bulunmak için lütfen [CONTRIBUTING.md](CONTRIBUTING.md) dosyasını inceleyiniz.
+### Model 2B Kriptolojik Akışı:
+1. CA: sPriv/sPub üretir
+2. CA → Kullanıcı: (sPriv + sPub + sCert) şifreli paket
+3. Kullanıcı: uPriv ile paketi açar
+4. Kullanıcı: sPriv ile HASH'i imzalar
+5. Kullanıcı → Kurum: signature + sPub + sCert
+6. Kurum: sPub ile imza doğrular
+
+### Model 3 Kriptolojik Akışı:
+1. Kullanıcı: uPriv ile onay imzası atar
+2. Kurum → CA: onay + uPub + HASH
+3. CA: uPub ile onayı doğrular
+4. CA: sPriv/sPub üretir
+5. CA: HASH'i sPriv ile imzalar
+6. CA → Kurum: signature + sPub + sCert
+7. Kurum: sPub ile imza doğrular
+
+**Her iki modelde de kuruma teslim edilen:**
+- İmzalı HASH (signature)
+- Genel anahtar (sPub)
+- Geçici sertifika (sCert)
+
+Bu yapı tam bir kriptoloji döngüsü oluşturur ve "**tek imza → tek işlem**" paradigmasını sağlar.  
 
 ---
 
-## 📞 İletişim
+## 6. Avantajlar
 
-Sorularınız için: [e-imza-destek@example.com](mailto:e-imza-destek@example.com)
+- **Dağıtık Güven:** Hiçbir taraf tek başına tam yetkiye sahip değildir.  
+- **Yüksek Güvenlik:** Her işlem bağımsızdır, anahtar sızıntısı zincirleme risk oluşturmaz.  
+- **Ekonomik:** Devlete ek maliyet doğurmadan 80 milyon vatandaş e-imza sahibi olabilir.  
+- **Mahremiyet:** CA kimlik bilgilerini saklamaz, veri ihlali riski minimumdur.  
+- **Uluslararası Açılım:** AB eIDAS 2.0 gibi standartlarla uyumlu hale getirilerek Türkiye'nin dijital kimlik alanında öncü ülke olmasını sağlar.  
 
-**Son güncelleme**: Eylül 2025
+---
+
+## 7. Sonuç
+
+**Tek Kullanımlık E-İmza Sistemi (SUDSS)**, klasik e-imza modelinden farklı olarak:  
+- Kullanıcı yükünü ortadan kaldırır  
+- İşlemleri izole eder  
+- Güvenliği artırır  
+- Türkiye'yi dijital imza teknolojisinde dünyada lider konuma taşıyabilecek bir altyapı sunar.  
+
+**Bu sistem sadece teknik bir yenilik değil; dijital toplum yaratma vizyonudur.**
