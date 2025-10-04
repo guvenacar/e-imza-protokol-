@@ -447,12 +447,15 @@ Kullanıcı → uPriv → İmza → Kurum
 ### Dağıtık Güvenin Avantajı
 
 **Bir katman kırılsa bile diğerleri durur:**
+``` 
 Saldırgan sPriv'i ele geçirse:
+
 ├─ Token zaten kullanılmış → geçersiz
 ├─ TTL dolmuş → geçersiz
 └─ Başka işlemde kullanamaz → her işlem farklı sPriv
-
+``` 
 **Tek bir aktör sistemi ele geçiremez:**
+``` 
 CA hacklense:
 ├─ BTK token kontrolü durur → işlem olmaz
 └─ Eski işlemler geçerli (sPriv zaten imha edildi)
@@ -462,10 +465,12 @@ BTK hacklense:
 İzole alan hacklense:
 ├─ Sadece o kullanıcı etkilenir
 └─ CA, Kurum, BTK güvende
-
+``` 
 **Klasik sistemde ise:**
+``` 
 CA hacklense:
 └─ Tüm sistem çöker
+``` 
 
 ---
 
